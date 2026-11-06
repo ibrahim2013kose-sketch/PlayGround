@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#071322" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%2369f6e2' d='M16 1l3 11 11 4-11 3-3 12-3-12L1 16l12-4z'/%3E%3C/svg%3E" />
+  <title>SKYWAKE — Glasswind Expanse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="game" aria-label="Skywake flight game"></canvas>
+    <div class="vignette"></div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Skywake home"><span class="brand-mark">✳</span> SKYWAKE <span class="brand-divider">/</span> <span class="brand-sub">FLIGHT TRIALS</span></a>
+      <div class="run-label"><span class="live-dot"></span> EXPANSE RUN <span class="run-divider">·</span> 01</div>
+      <button class="sound-button" id="soundButton" aria-label="Toggle sound" title="Toggle sound">♫ <span>SOUND</span></button>
+    </header>
+    <section class="hud" id="hud" aria-live="polite">
+      <div class="hud-left">
+        <div class="eyebrow">GLASSWIND EXPANSE</div>
+        <div class="distance"><span id="gateCount">00</span><small> / 08<br>GATES</small></div>
+      </div>
+      <div class="hud-center">
+        <div class="wake-title"><span>✦</span> WAKE SURF <small id="wakeState">FIND THE CURRENT</small></div>
+        <div class="wake-track"><div class="wake-fill" id="wakeFill"></div><span class="wake-glint"></span></div>
+        <div class="wake-hint">RIDE THE CYAN STREAM TO CHARGE YOUR BURST</div>
+      </div>
+      <div class="hud-right"><div class="shard-label">SUN SHARDS</div><div class="shard-count"><span id="shardCount">0</span><span class="shard-icon">✦</span></div></div>
+    </section>
+    <div class="toast" id="toast"></div>
+    <section class="overlay intro" id="intro">
+      <div class="intro-card">
+        <div class="kicker"><span class="kicker-line"></span> A NEW FLIGHT TRIAL <span class="kicker-line"></span></div>
+        <div class="title-wrap"><h1>CHASE THE<br><em>GLASSWIND.</em></h1><div class="title-star">✳</div></div>
+        <p class="intro-copy">The old skyway is gone. Follow the living current through a maze of cloudstone and bring the sun shards home.</p>
+        <div class="mission-row"><span class="mission-icon">⌁</span><div><b>NEW MECHANIC · WAKE SURFING</b><small>Hold your line inside the cyan current to charge a speed burst.</small></div></div>
+        <div class="mission-row challenge-row"><span class="mission-icon">◈</span><div><b>FRESH CHALLENGE · THE SHARD RUN</b><small>Clear 8 shifting gates, dodge storm mines, collect 5 shards.</small></div></div>
+        <button class="start-button" id="startButton">TAKE FLIGHT <span>↗</span></button>
+        <div class="controls-note"><span>← →</span> STEER <i>·</i> <span>↑ ↓</span> DIVE / CLIMB <i>·</i> <span>SPACE</span> WAKE BURST</div>
+      </div>
+      <div class="intro-side"><span class="side-number">01</span><span class="side-rule"></span><span class="side-text">THE SKY DOESN'T WAIT</span></div>
+    </section>
+    <section class="overlay result hidden" id="result">
+      <div class="result-card">
+        <div class="kicker"><span class="kicker-line"></span> FLIGHT REPORT <span class="kicker-line"></span></div>
+        <h2 id="resultTitle">RUN COMPLETE</h2>
+        <p id="resultCopy">The expanse is yours.</p>
+        <div class="report"><div><small>GATES CLEARED</small><b id="resultGates">0 / 8</b></div><div><small>SUN SHARDS</small><b id="resultShards">0 / 5</b></div><div><small>BEST STREAK</small><b id="resultStreak">0</b></div></div>
+        <button class="start-button" id="againButton">FLY AGAIN <span>↗</span></button>
+        <div class="controls-note">PRESS <span>ENTER</span> TO RETRY</div>
+      </div>
+    </section>
+    <div class="mobile-controls" id="mobileControls">
+      <div class="dpad"><button data-dir="left" aria-label="Steer left">‹</button><div class="vertical-pad"><button data-dir="up" aria-label="Climb">⌃</button><button data-dir="down" aria-label="Dive">⌄</button></div><button data-dir="right" aria-label="Steer right">›</button></div>
+      <button class="boost-button" id="boostButton"><span>✦</span> BURST</button>
+    </div>
+    <footer class="bottomline"><span>WIND IS A ROAD IF YOU KNOW HOW TO LISTEN</span><span>GLASSWIND EXpanse <b>—</b> 03:00 PM</span></footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
