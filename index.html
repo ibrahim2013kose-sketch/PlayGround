@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#07111b">
+  <link rel="icon" href="data:,">
+  <title>Neon Serpent — 3D Yılan</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07111b;--panel:#0d1d2a;--line:rgba(143,196,211,.13);--mint:#66f3c1;--ice:#8be7ff;--muted:#91a9b5;--gold:#ffcf70}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#effcff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}body{min-height:100svh;display:grid;place-items:center;overflow-x:hidden;background:radial-gradient(ellipse at 50% 5%,#163348 0,#0a1a27 42%,#07111b 78%);padding:16px}
+    button{font:inherit;color:inherit} .app{width:min(100%,520px);display:flex;flex-direction:column;gap:14px;padding:4px 0 8px}
+    .topline{display:flex;align-items:center;justify-content:space-between;padding:0 3px}.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:39px;height:39px;border:1px solid rgba(102,243,193,.35);border-radius:13px;background:linear-gradient(145deg,rgba(102,243,193,.2),rgba(139,231,255,.07));display:grid;place-items:center;box-shadow:0 0 25px rgba(102,243,193,.09)}.brand-mark svg{width:23px}.eyebrow{font-size:10px;letter-spacing:.23em;color:var(--mint);font-weight:800;text-transform:uppercase}.brand h1{font-size:19px;line-height:1.05;margin:3px 0 0;letter-spacing:.02em}.icon-button{width:40px;height:40px;border-radius:13px;background:rgba(17,39,53,.85);border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;color:#a8c4ce;transition:.18s}.icon-button:hover,.icon-button:focus-visible{border-color:rgba(102,243,193,.5);color:var(--mint);outline:none}.icon-button svg{width:19px;height:19px}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{min-height:66px;padding:11px 15px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(135deg,rgba(16,39,54,.96),rgba(11,27,40,.9));display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 22px rgba(0,0,0,.12)}.stat-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}.stat-value{font-size:23px;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums}.stat:first-child .stat-value{color:var(--mint)}.best-icon{color:var(--gold);font-size:17px;margin-right:8px}
+    .game-shell{position:relative;width:100%;aspect-ratio:1/1;border:1px solid rgba(133,201,218,.19);border-radius:23px;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#112c3b 0,#0b1c29 67%,#091722 100%);box-shadow:0 18px 55px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.045);touch-action:none}.game-shell::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(135deg,rgba(255,255,255,.035),transparent 30%,transparent 75%,rgba(102,243,193,.025))}.game-shell canvas{display:block;width:100%;height:100%;touch-action:none}.level-tag{position:absolute;z-index:2;left:15px;top:14px;display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid rgba(145,191,205,.14);border-radius:99px;background:rgba(6,18,28,.62);backdrop-filter:blur(8px);font-size:10px;font-weight:700;letter-spacing:.12em;color:#a7c3ce;text-transform:uppercase;pointer-events:none}.live-dot{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 10px var(--mint)}.hint{position:absolute;z-index:2;right:15px;top:15px;color:#72909d;font-size:10px;letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+    .overlay{position:absolute;inset:0;z-index:3;display:grid;place-items:center;padding:24px;background:rgba(5,15,23,.32);backdrop-filter:blur(2px);transition:opacity .2s,visibility .2s}.overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}.overlay-card{width:min(100%,290px);text-align:center;padding:27px 22px 23px;border:1px solid rgba(152,210,220,.19);border-radius:22px;background:linear-gradient(145deg,rgba(14,35,48,.94),rgba(8,23,34,.96));box-shadow:0 24px 70px rgba(0,0,0,.35)}.overlay-icon{font-size:31px;filter:drop-shadow(0 0 14px rgba(102,243,193,.3));margin-bottom:8px}.overlay-card h2{margin:0 0 8px;font-size:24px;letter-spacing:.01em}.overlay-card p{color:#a1b7c0;font-size:13px;line-height:1.55;margin:0 auto 19px;max-width:235px}.primary-button{width:100%;height:48px;border:0;border-radius:13px;background:linear-gradient(110deg,#5debb8,#8cf1cf);color:#06241e;font-weight:850;font-size:14px;letter-spacing:.02em;cursor:pointer;box-shadow:0 8px 24px rgba(70,219,168,.19);transition:transform .15s,filter .15s}.primary-button:hover{filter:brightness(1.06);transform:translateY(-1px)}.primary-button:active{transform:translateY(1px)}
+    .controls-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:1px 2px}.help{font-size:11px;color:#829ba6;line-height:1.6}.help strong{color:#b4cbd3;font-weight:650}.dpad{width:130px;height:116px;position:relative;flex:0 0 auto;display:grid;place-items:center}.dpad button{position:absolute;width:39px;height:39px;display:grid;place-items:center;padding:0;border:1px solid rgba(136,189,204,.19);border-radius:12px;background:linear-gradient(145deg,#173344,#102635);color:#b8d5dc;box-shadow:0 5px 12px rgba(0,0,0,.16);cursor:pointer;touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent}.dpad button:active{background:#1b4852;color:var(--mint);border-color:rgba(102,243,193,.48);transform:scale(.94)}.dpad button svg{width:17px;height:17px}.dpad .up{top:0;left:45px}.dpad .left{left:0;top:39px}.dpad .right{right:0;top:39px}.dpad .down{bottom:0;left:45px}.dpad .center{width:30px;height:30px;border-radius:50%;background:#10232f;border-color:rgba(136,189,204,.1);pointer-events:none}
+    .footer{display:flex;justify-content:center;align-items:center;gap:8px;color:#647f8b;font-size:10px;letter-spacing:.05em;margin-top:-3px}.footer span{color:#426071}
+    @media(min-width:700px){body{padding:24px}.app{gap:16px}.game-shell{border-radius:26px}}
+    @media(max-width:390px){body{padding:11px}.app{gap:10px}.stat{min-height:58px;padding:8px 12px}.stat-value{font-size:21px}.game-shell{border-radius:19px}.controls-row{gap:8px}.help{font-size:10px}.dpad{transform:scale(.92);transform-origin:right center;margin-left:-7px}.brand h1{font-size:17px}}
+    @media(max-height:760px) and (min-width:500px){body{padding:10px}.app{width:min(440px,100%);gap:10px}.game-shell{max-height:calc(100svh - 220px)}}
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Neon Serpent 3D yılan oyunu">
+    <header class="topline">
+      <div class="brand"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 15.5c0-2.2 1.8-4 4-4h3.5a3 3 0 1 0-3-3" stroke="#66f3c1" stroke-width="2.4" stroke-linecap="round"/><path d="M20 8.5c0 2.2-1.8 4-4 4h-3.5a3 3 0 1 0 3 3" stroke="#8be7ff" stroke-width="2.4" stroke-linecap="round"/><circle cx="8" cy="7.5" r="1" fill="#66f3c1"/></svg></div><div><div class="eyebrow">Arcade · 3D</div><h1>Neon Serpent</h1></div></div>
+      <button class="icon-button" id="soundBtn" aria-label="Sesi aç" title="Ses aç/kapat"><svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+    </header>
+    <section class="stats" aria-label="Oyun istatistikleri"><div class="stat"><div><div class="stat-label">Skor</div><div class="stat-value" id="score">000</div></div><span aria-hidden="true" style="font-size:19px;color:#66f3c1">✦</span></div><div class="stat"><div><div class="stat-label">En iyi</div><div class="stat-value" id="best">000</div></div><span class="best-icon" aria-hidden="true">♛</span></div></section>
+    <section class="game-shell" id="gameShell" aria-label="Oyun alanı">
+      <canvas id="gameCanvas" aria-label="3 boyutlu yılan oyun alanı"></canvas>
+      <div class="level-tag"><i class="live-dot"></i><span id="statusText">Hazır</span></div><div class="hint">3D · CLASSIC</div>
+      <div class="overlay" id="overlay"><div class="overlay-card"><div class="overlay-icon" id="overlayIcon">✧</div><h2 id="overlayTitle">Hazır mısın?</h2><p id="overlayCopy">Neon yemleri topla, kendi kuyruğuna ve duvarlara çarpma. Ne kadar büyüyebilirsin?</p><button class="primary-button" id="startBtn">Oyuna başla <span aria-hidden="true">→</span></button></div></div>
+    </section>
+    <section class="controls-row" aria-label="Oyun kontrolleri"><div class="help"><strong>Yön tuşları</strong> veya <strong>W A S D</strong><br>Mobilde kaydır ya da tuşlara dokun.<br><span style="color:#607e8a">Duraklat: boşluk · P</span></div>
+      <div class="dpad" aria-label="Dokunmatik yön kontrolleri">
+        <button class="up" data-dir="up" aria-label="Yukarı"><svg viewBox="0 0 20 20"><path d="m4 12 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="left" data-dir="left" aria-label="Sola"><svg viewBox="0 0 20 20"><path d="m12 4-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="center" tabindex="-1" aria-hidden="true"></button>
+        <button class="right" data-dir="right" aria-label="Sağa"><svg viewBox="0 0 20 20"><path d="m8 4 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="down" data-dir="down" aria-label="Aşağı"><svg viewBox="0 0 20 20"><path d="m4 8 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </section>
+    <footer class="footer"><span>✦</span> SAKİN KAL · HIZLANAN BİR MACERA <span>✦</span></footer>
+  </main>
+<script>
+  const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
+  const shell=document.getElementById('gameShell'),overlay=document.getElementById('overlay');
+  const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),statusEl=document.getElementById('statusText');
+  const overlayTitle=document.getElementById('overlayTitle'),overlayCopy=document.getElementById('overlayCopy'),overlayIcon=document.getElementById('overlayIcon'),startBtn=document.getElementById('startBtn');
+  const SIZE=15;let w=0,h=0,dpr=1,ux=10,uy=5,boardTop=0,stars=[];
+  let snake=[],food={x:4,y:4},dir={x:1,y:0},queued=null,turnQueued=false,score=0,best=0,state='ready',lastStep=0,accumulator=0,previousTime=0;
+  let soundOn=false,audioCtx=null,pointerStart=null;
+  try{best=Number(localStorage.getItem('neon-serpent-best'))||0}catch(e){} bestEl.textContent=String(best).padStart(3,'0');
+  const project=(x,y)=>({x:w/2+(x-y)*ux,y:boardTop+(x+y)*uy});
+  function resize(){const rect=shell.getBoundingClientRect();w=rect.width;h=rect.height;dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ux=Math.min(w/(SIZE*2.2),h/(SIZE*1.35));uy=ux*.48;boardTop=(h-SIZE*2*uy)/2+4;stars=Array.from({length:48},(_,i)=>({x:(i*97.13%w),y:(i*47.73%h),r:(i%4)*.24+.35,a:.1+(i%5)*.035}));draw()}
+  function polygon(points,fill,stroke=null,line=1){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line;ctx.stroke()}}
+  function diamond(x,y,fill,stroke){const p=project(x,y);polygon([{x:p.x,y:p.y-uy},{x:p.x+ux,y:p.y},{x:p.x,y:p.y+uy},{x:p.x-ux,y:p.y}],fill,stroke,.55)}
+  function roundedBox(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x-r,y-r,r*2,r*2,r);ctx.fill()}
+  function drawBackground(t){ctx.clearRect(0,0,w,h);const bg=ctx.createRadialGradient(w*.5,h*.45,0,w*.5,h*.5,Math.max(w,h)*.75);bg.addColorStop(0,'#112a39');bg.addColorStop(.63,'#0b1b28');bg.addColorStop(1,'#08141e');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);for(const s of stars){ctx.globalAlpha=s.a*(.78+.22*Math.sin(t*.0008+s.x));roundedBox(s.x,s.y,s.r,'#a8e7e6')}ctx.globalAlpha=1}
+  function drawBoard(){
+    const a=project(0,0),b=project(SIZE,0),c=project(SIZE,SIZE),d=project(0,SIZE),wall=Math.max(9,ux*.7);
+    polygon([{x:d.x,y:d.y},{x:c.x,y:c.y},{x:c.x,y:c.y+wall},{x:d.x,y:d.y+wall}],'#122f38','#245451',1);
+    polygon([{x:b.x,y:b.y},{x:c.x,y:c.y},{x:c.x,y:c.y+wall},{x:b.x,y:b.y+wall}],'#102934','#234751',1);
+    polygon([a,b,c,d],'#102b35','#35645f',1.2);
+    for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+      const shade=(x+y)%2===0?'rgba(26,66,72,.72)':'rgba(19,53,64,.78)';diamond(x+.5,y+.5,shade,'rgba(116,188,177,.075)');
+      if((x*7+y*11)%37===2){const p=project(x+.5,y+.5);ctx.fillStyle='rgba(137,223,194,.12)';ctx.fillRect(p.x-.7,p.y-.7,1.4,1.4)}
+    }
+    ctx.save();ctx.shadowColor='rgba(87,235,192,.35)';ctx.shadowBlur=11;polygon([a,b,c,d],null,'rgba(105,230,190,.47)',1.15);ctx.restore();
+  }
+  function drawCube(part,index,t){
+    const p=project(part.x+.5,part.y+.5),rx=ux*.68,ry=uy*.68,depth=Math.max(5,ux*.57),head=index===0;
+    const pulse=head?(Math.sin(t*.008)+1)*.6:0,colors=head?['#a8ffe0','#54e5b3','#21a87e']:['#7cebc5','#3cc899','#208c75'];
+    const topY=p.y-depth-pulse;
+    polygon([{x:p.x-rx,y:topY},{x:p.x,y:topY-ry},{x:p.x+rx,y:topY},{x:p.x,y:topY+ry}],colors[0],null);
+    polygon([{x:p.x-rx,y:topY},{x:p.x,y:topY+ry},{x:p.x,y:topY+ry+depth},{x:p.x-rx,y:topY+depth}],colors[1],null);
+    polygon([{x:p.x,y:topY+ry},{x:p.x+rx,y:topY},{x:p.x+rx,y:topY+depth},{x:p.x,y:topY+ry+depth}],colors[2],null);
+    ctx.beginPath();ctx.moveTo(p.x-rx,p.y-depth-pulse);ctx.lineTo(p.x,p.y-depth-ry-pulse);ctx.lineTo(p.x+rx,p.y-depth-pulse);ctx.strokeStyle=head?'rgba(231,255,248,.65)':'rgba(215,255,241,.27)';ctx.lineWidth=1;ctx.stroke();
+    if(head){let fx=dir.x,fy=dir.y;const forward=project(.5+fx*.22,.5+fy*.22);const side=project(.5+fy*.18,.5-fx*.18);
+      for(const sign of [-1,1]){const eye={x:p.x+(forward.x-p.x)+(side.x-p.x)*sign*.63,y:topY+(forward.y-p.y)+(side.y-p.y)*sign*.63};ctx.fillStyle='#07352f';ctx.beginPath();ctx.ellipse(eye.x,eye.y,Math.max(1.25,ux*.095),Math.max(1.5,uy*.18),-.45,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e7fff5';ctx.beginPath();ctx.arc(eye.x-ux*.025,eye.y-uy*.05,Math.max(.5,ux*.035),0,Math.PI*2);ctx.fill()}
+    }
+  }
+  function drawFood(t){const p=project(food.x+.5,food.y+.5),bob=Math.sin(t*.006)*2,rad=Math.max(4,ux*.29);const glow=ctx.createRadialGradient(p.x,p.y-uy-bob,1,p.x,p.y-uy-bob,ux*1.25);glow.addColorStop(0,'rgba(255,154,123,.36)');glow.addColorStop(1,'rgba(255,95,91,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(p.x,p.y-uy-bob,ux*1.25,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(p.x,p.y+uy*.58,rad*1.15,uy*.28,0,0,Math.PI*2);ctx.fill();ctx.save();ctx.shadowColor='#ff6c65';ctx.shadowBlur=15;const orb=ctx.createRadialGradient(p.x-rad*.35,p.y-uy-bob-rad*.42,1,p.x,p.y-uy-bob,rad*1.3);orb.addColorStop(0,'#fff5ce');orb.addColorStop(.32,'#ffb378');orb.addColorStop(1,'#ff596a');ctx.fillStyle=orb;ctx.beginPath();ctx.arc(p.x,p.y-uy-bob,rad,0,Math.PI*2);ctx.fill();ctx.restore();ctx.fillStyle='rgba(255,255,255,.82)';ctx.beginPath();ctx.arc(p.x-rad*.3,p.y-uy-bob-rad*.28,Math.max(1,rad*.17),0,Math.PI*2);ctx.fill();
+  }
+  function draw(t=0){if(!w||!h)return;drawBackground(t);drawBoard();const pieces=snake.map((part,index)=>({part,index})).sort((a,b)=>(a.part.x+a.part.y)-(b.part.x+b.part.y));for(const piece of pieces)if(piece.index!==0)drawCube(piece.part,piece.index,t);drawFood(t);if(snake.length)drawCube(snake[0],0,t)}
+  function placeFood(){const open=[];for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++)if(!snake.some(p=>p.x===x&&p.y===y))open.push({x,y});food=open[Math.floor(Math.random()*open.length)]||{x:7,y:7}}
+  function reset(){snake=[{x:8,y:7},{x:7,y:7},{x:6,y:7}];dir={x:1,y:0};queued=null;turnQueued=false;score=0;scoreEl.textContent='000';placeFood();accumulator=0;lastStep=0}
+  function showOverlay(title,copy,button,icon){overlayTitle.textContent=title;overlayCopy.textContent=copy;startBtn.innerHTML=button;overlayIcon.textContent=icon;overlay.classList.remove('hidden')}
+  function hideOverlay(){overlay.classList.add('hidden')}
+  function begin(){if(state==='ready'||state==='over')reset();state='running';statusEl.textContent='Canlı';hideOverlay();lastStep=performance.now();accumulator=0}
+  function togglePause(){if(state==='running'){state='paused';statusEl.textContent='Duraklatıldı';showOverlay('Mola zamanı','Yılanın seni bekliyor. Hazır olduğunda kaldığın yerden devam et.','Devam et <span aria-hidden="true">→</span>','Ⅱ')}else if(state==='paused'){state='running';statusEl.textContent='Canlı';hideOverlay();lastStep=performance.now()}}
+  function finish(){state='over';statusEl.textContent='Oyun bitti';if(score>best){best=score;bestEl.textContent=String(best).padStart(3,'0');try{localStorage.setItem('neon-serpent-best',String(best))}catch(e){}}tone(125,.18,'sawtooth');showOverlay('Çarpıştın!',score?`Harika iş! ${score} puan topladın. Bir tur daha deneyip rekorunu kır.`:'Bir tur daha dene; bu kez daha uzağa gidebilirsin.','Tekrar oyna <span aria-hidden="true">↻</span>','✦')}
+  function step(){if(state!=='running')return;if(queued){dir=queued;queued=null}turnQueued=false;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};const eating=head.x===food.x&&head.y===food.y;const body=eating?snake:snake.slice(0,-1);if(head.x<0||head.x>=SIZE||head.y<0||head.y>=SIZE||body.some(p=>p.x===head.x&&p.y===head.y)){finish();return}snake.unshift(head);if(eating){score+=10;scoreEl.textContent=String(score).padStart(3,'0');tone(540,.07,'sine');placeFood()}else snake.pop()}
+  function direction(x,y){if(state!=='running'||turnQueued)return;if(x===-dir.x&&y===-dir.y)return;queued={x,y};turnQueued=true}
+  function tone(freq,duration,type='sine'){if(!soundOn)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.055,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration)}catch(e){}}
+  function frame(t){if(!previousTime)previousTime=t;const delta=Math.min(80,t-previousTime);previousTime=t;if(state==='running'){accumulator+=delta;const interval=Math.max(82,148-Math.floor(score/50)*5);while(accumulator>=interval&&state==='running'){step();accumulator-=interval}}draw(t);requestAnimationFrame(frame)}
+  window.addEventListener('resize',resize,{passive:true});
+  document.addEventListener('keydown',e=>{const key=e.key.toLowerCase();const map={arrowleft:[-1,0],a:[-1,0],arrowright:[1,0],d:[1,0],arrowup:[0,-1],w:[0,-1],arrowdown:[0,1],s:[0,1]};if(map[key]){e.preventDefault();direction(...map[key])}else if(key===' '||key==='p'){e.preventDefault();if(state==='running'||state==='paused')togglePause()}else if(key==='enter'&&(state==='ready'||state==='over'))begin()});
+  document.querySelectorAll('.dpad button[data-dir]').forEach(button=>button.addEventListener('pointerdown',e=>{e.preventDefault();const dirs={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};direction(...dirs[button.dataset.dir])}));
+  startBtn.addEventListener('click',()=>{if(state==='paused')togglePause();else begin()});
+  document.getElementById('soundBtn').addEventListener('click',()=>{soundOn=!soundOn;document.getElementById('soundBtn').setAttribute('aria-label',soundOn?'Sesi kapat':'Sesi aç');document.getElementById('soundIcon').innerHTML=soundOn?'<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>':'<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m17 9 5 6m0-6-5 6"/>';if(soundOn)tone(650,.08)});
+  canvas.addEventListener('pointerdown',e=>{pointerStart={x:e.clientX,y:e.clientY,id:e.pointerId};canvas.setPointerCapture(e.pointerId)});
+  canvas.addEventListener('pointerup',e=>{if(!pointerStart||e.pointerId!==pointerStart.id)return;const dx=e.clientX-pointerStart.x,dy=e.clientY-pointerStart.y;pointerStart=null;if(Math.max(Math.abs(dx),Math.abs(dy))<18)return;if(Math.abs(dx)>Math.abs(dy))direction(dx>0?1:-1,0);else direction(0,dy>0?1:-1)});
+  canvas.addEventListener('pointercancel',()=>pointerStart=null);
+  resize();reset();requestAnimationFrame(frame);
+</script>
+</body>
+</html>
