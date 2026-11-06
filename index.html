@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#77b8df">
+  <meta name="description" content="Küp Dünyası — keşfet, kaz ve kendi voxel adanı inşa et.">
+  <title>Küp Dünyası — 3D Voxel Sandbox</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%239fe367' d='M32 4 60 20 32 36 4 20Z'/%3E%3Cpath fill='%23518a38' d='M4 20 32 36v24L4 44Z'/%3E%3Cpath fill='%2377b94d' d='M32 36 60 20v24L32 60Z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="menu-open">
+
+  <div id="world" aria-hidden="true"></div>
+  <div id="sky-fade"></div>
+  <div id="vignette"></div>
+
+  <header id="hud-top">
+    <div class="brand-mini">
+      <span class="mini-cube" aria-hidden="true">
+        <i class="mini-top"></i><i class="mini-left"></i><i class="mini-right"></i>
+      </span>
+      <span class="brand-word">KÜP DÜNYASI</span>
+    </div>
+    <div class="compass" aria-hidden="true">
+      <span id="compass-dir">K</span>
+      <span id="compass-deg">0°</span>
+    </div>
+    <div class="hud-right">
+      <span id="coords" class="hud-chip">32 · 10 · 43</span>
+      <span class="hud-chip key-hint">ESC MENÜ</span>
+    </div>
+  </header>
+
+  <div id="crosshair" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><b></b>
+  </div>
+
+  <div id="target-pill" class="target-pill" aria-live="polite">
+    <span class="target-dot"></span>
+    <span id="target-name">Çim</span>
+    <span class="target-action">SOL TIK · KIR</span>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <div id="block-label" aria-hidden="true">
+    <span id="block-label-num">01</span>
+    <span id="block-label-name">Çim Bloğu</span>
+  </div>
+
+  <nav id="hotbar" aria-label="Blok seçimi"></nav>
+
+  <div id="touch-ui" aria-hidden="true">
+    <div id="joystick" class="joystick">
+      <div class="joystick-ring"></div>
+      <div id="joystick-knob" class="joystick-knob"></div>
+    </div>
+    <div class="touch-actions">
+      <button id="btn-jump" class="touch-btn jump-btn" type="button" aria-label="Zıpla">
+        <span>▲</span><small>ZIPLA</small>
+      </button>
+      <button id="btn-break" class="touch-btn break-btn" type="button" aria-label="Blok kır">
+        <span class="pick-icon" aria-hidden="true">⛏</span><small>KIR</small>
+      </button>
+      <button id="btn-place" class="touch-btn place-btn" type="button" aria-label="Blok koy">
+        <span class="place-icon" aria-hidden="true"></span><small>KOY</small>
+      </button>
+    </div>
+  </div>
+
+  <main id="menu" aria-label="Oyun menüsü">
+    <div class="menu-wash"></div>
+    <section class="menu-card">
+      <div class="logo-row">
+        <svg class="logo-cubes" viewBox="0 0 126 108" aria-hidden="true">
+          <g transform="translate(8 42)">
+            <polygon points="0,17 31,0 62,17 31,34" fill="#a7dc73"/>
+            <polygon points="0,17 31,34 31,68 0,51" fill="#578b39"/>
+            <polygon points="31,34 62,17 62,51 31,68" fill="#79b84e"/>
+            <path d="M3 19 29 5" stroke="#d9f7b6" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+          </g>
+          <g transform="translate(55 23)">
+            <polygon points="0,15 27,0 54,15 27,30" fill="#f4d67a"/>
+            <polygon points="0,15 27,30 27,60 0,45" fill="#a77c2e"/>
+            <polygon points="27,30 54,15 54,45 27,60" fill="#d8ab4b"/>
+            <path d="M3 17 25 5" stroke="#fff2b9" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+          </g>
+          <g transform="translate(20 4)">
+            <polygon points="0,12 22,0 44,12 22,24" fill="#a9c5d4"/>
+            <polygon points="0,12 22,24 22,48 0,36" fill="#5c7f92"/>
+            <polygon points="22,24 44,12 44,36 22,48" fill="#7fa3b5"/>
+          </g>
+        </svg>
+        <div class="logo-text">
+          <span id="menu-kicker" class="kicker">BLOK BLOK BİR DÜNYA</span>
+          <span class="edition">YAZ TATİLİ SÜRÜMÜ</span>
+        </div>
+      </div>
+
+      <h1 id="menu-title">KÜP<br><span>DÜNYASI</span></h1>
+      <p id="menu-desc" class="menu-desc">Kendi adanı keşfet. Dağları kaz, ağaçları devir ve hayalindeki dünyayı blok blok inşa et.</p>
+
+      <div class="world-stats" aria-label="Dünya bilgileri">
+        <span><b>64×64</b> ada</span>
+        <i></i>
+        <span><b>8</b> blok</span>
+        <i></i>
+        <span><b>∞</b> inşa</span>
+      </div>
+
+      <button id="play-btn" class="play-btn" type="button">
+        <span id="play-label">DÜNYAYA GİR</span>
+        <span class="play-arrow" aria-hidden="true">→</span>
+      </button>
+
+      <div class="controls-card">
+        <div class="controls-head">
+          <span>KONTROLLER</span>
+          <span id="control-note">FARE + KLAVYE</span>
+        </div>
+        <div class="controls desktop-controls">
+          <div><kbd>W A S D</kbd><span>Hareket</span></div>
+          <div><kbd class="wide">BOŞLUK</kbd><span>Zıpla</span></div>
+          <div><kbd>SOL TIK</kbd><span>Blok kır</span></div>
+          <div><kbd>SAĞ TIK</kbd><span>Blok koy</span></div>
+          <div><kbd>1–8</kbd><span>Blok seç</span></div>
+          <div><kbd>F</kbd><span>Uçuş modu</span></div>
+        </div>
+        <div class="controls touch-controls">
+          <div><kbd>JOYSTICK</kbd><span>Hareket</span></div>
+          <div><kbd>▲</kbd><span>Zıpla</span></div>
+          <div><kbd>⛏</kbd><span>Blok kır</span></div>
+          <div><kbd>▣</kbd><span>Blok koy</span></div>
+          <div><kbd>SÜRÜKLE</kbd><span>Etrafa bak</span></div>
+          <div><kbd>DOKUN</kbd><span>Blok seç</span></div>
+        </div>
+      </div>
+
+      <div class="menu-footer">
+        <button id="sound-btn" class="text-btn" type="button" aria-pressed="true">
+          <span id="sound-icon">◖))</span><span id="sound-label">SES AÇIK</span>
+        </button>
+        <span class="save-note"><i></i> OTOMATİK KAYIT</span>
+        <button id="reset-btn" class="text-btn danger" type="button">YENİ DÜNYA</button>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="fade" aria-hidden="true"></div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
