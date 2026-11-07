@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#07111e" />
+<link rel="icon" href="data:," />
+<title>SUPER LEAGUE — Tidal Dome</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{color-scheme:dark;--ink:#07111e;--panel:#0d1b2b;--muted:#89a1b5;--line:#22384b;--mint:#9efc61;--cyan:#49e4ee;--orange:#ff8758}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#193448 0%,#0a1927 45%,#060d17 100%);color:#f3f8fa;font-family:Manrope,system-ui,sans-serif;display:flex;justify-content:center;padding:24px 24px 30px;overflow-x:hidden}.app{width:min(1240px,100%)}.topbar{display:flex;align-items:center;justify-content:space-between;margin:0 2px 15px}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:37px;height:37px;background:var(--mint);color:#07111e;border-radius:11px;display:grid;place-items:center;font:900 20px 'Barlow Condensed';transform:rotate(-5deg);box-shadow:0 0 25px #9efc6133}.brand-name{font:800 21px 'Barlow Condensed';letter-spacing:1.6px}.brand-name span{color:var(--mint)}.season{font:10px 'DM Mono';letter-spacing:1.3px;color:#8da5b7;margin-top:3px}.edition{border:1px solid #2b4355;border-radius:20px;padding:8px 12px;color:#a8becd;font:10px 'DM Mono';letter-spacing:1.2px;text-transform:uppercase}.game-shell{background:#0b1724;border:1px solid #273c4d;border-radius:19px;overflow:hidden;box-shadow:0 28px 80px #0008,0 1px 0 #ffffff0a inset;position:relative}.matchbar{height:68px;background:linear-gradient(90deg,#0c1a28,#102031 50%,#0c1a28);display:flex;align-items:center;justify-content:space-between;padding:0 25px;border-bottom:1px solid #1f3445}.team{display:flex;align-items:center;gap:11px;min-width:215px}.team.away{justify-content:flex-end;text-align:right}.crest{height:34px;width:34px;border-radius:10px;display:grid;place-items:center;font:800 16px 'Barlow Condensed';background:#173449;color:#75eff0;border:1px solid #286276}.away .crest{background:#392722;color:#ffa17e;border-color:#774637}.team-copy{font:700 12px 'Barlow Condensed';letter-spacing:1.1px}.team-copy small{display:block;color:#8298a9;font:9px 'DM Mono';letter-spacing:.7px;margin-top:4px}.scorebox{display:flex;align-items:center;gap:15px}.score{font:800 29px 'Barlow Condensed';letter-spacing:3px;min-width:82px;text-align:center}.score .sep{color:#607587;margin:0 4px}.clock{font:12px 'DM Mono';color:var(--mint);min-width:42px;text-align:center}.clock.live{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:.55}}.stage{position:relative;background:#081827;line-height:0;overflow:hidden}canvas{width:100%;height:auto;aspect-ratio:16/9;display:block;touch-action:none}.status-chip{position:absolute;left:22px;top:17px;display:flex;align-items:center;gap:7px;background:#06111dc9;border:1px solid #ffffff1a;border-radius:99px;padding:7px 10px;font:9px 'DM Mono';letter-spacing:1px;color:#b8cbd6;line-height:1}.status-dot{width:6px;height:6px;background:var(--mint);border-radius:50%;box-shadow:0 0 8px var(--mint)}.tide-chip{position:absolute;right:22px;top:17px;background:#06111dc9;border:1px solid #ffffff1a;border-radius:7px;padding:7px 10px;font:9px 'DM Mono';letter-spacing:.8px;color:#b8cbd6;line-height:1}.tide-chip b{color:#63e5ea;font-weight:500}.overlay{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(90deg,#06111ebd,#06111e84 55%,#06111e8f);line-height:normal;transition:opacity .25s}.overlay.hidden{opacity:0;pointer-events:none}.intro-card{width:min(440px,90%);padding:30px 34px 26px;background:#0a1927ed;border:1px solid #426073;border-radius:17px;box-shadow:0 22px 70px #0009;text-align:center;backdrop-filter:blur(12px)}.kicker{font:10px 'DM Mono';letter-spacing:2px;color:var(--mint);text-transform:uppercase}.intro-card h1{font:900 clamp(42px,6vw,63px)/.91 'Barlow Condensed';letter-spacing:1px;text-transform:uppercase;margin:12px 0 10px}.intro-card h1 em{font-style:normal;color:var(--cyan)}.intro-card p{color:#aabdc8;font-size:12px;line-height:1.65;margin:10px auto 19px;max-width:330px}.primary{border:0;border-radius:9px;background:var(--mint);color:#08121c;padding:13px 22px;font:800 14px 'Barlow Condensed';letter-spacing:1.7px;text-transform:uppercase;cursor:pointer;box-shadow:0 5px 24px #9efc6133;transition:transform .15s,filter .15s}.primary:hover{transform:translateY(-2px);filter:brightness(1.07)}.intro-meta{display:flex;justify-content:center;gap:18px;margin-top:17px;color:#849aaa;font:9px 'DM Mono';letter-spacing:.7px}.intro-meta span:before{content:'✦';color:#6edfe5;margin-right:6px}.bottom{display:grid;grid-template-columns:1fr auto;gap:16px;margin-top:14px}.challenge{padding:14px 17px;border-radius:12px;border:1px solid #243b4c;background:#0b1927;display:flex;align-items:center;gap:13px}.challenge-icon{width:33px;height:33px;border-radius:9px;background:#153342;color:#65e8ec;display:grid;place-items:center;font-size:16px}.challenge strong{font:700 12px 'Barlow Condensed';letter-spacing:.8px;display:block}.challenge small{font-size:10px;color:#91a7b7;display:block;margin-top:4px}.controls{padding:11px 15px;border-radius:12px;border:1px solid #243b4c;background:#0b1927;display:flex;align-items:center;gap:14px}.control{display:flex;gap:7px;align-items:center;color:#8fa4b3;font-size:9px;white-space:nowrap}.key{padding:5px 7px;border:1px solid #344d60;background:#122436;color:#d4e4eb;border-radius:5px;font:10px 'DM Mono';box-shadow:0 2px 0 #253b4b}.touch-controls{display:none;position:absolute;inset:auto 15px 15px;justify-content:space-between;align-items:end;pointer-events:none}.touch-pad,.touch-actions{pointer-events:auto;display:flex;gap:8px}.touch-pad{width:116px;height:106px;position:relative}.pad-btn,.action-btn{border:1px solid #ffffff44;background:#0b1c2bbd;color:#eef8fc;backdrop-filter:blur(7px);touch-action:none;user-select:none;-webkit-user-select:none}.pad-btn{position:absolute;width:37px;height:37px;border-radius:10px;font-size:18px}.pad-up{top:0;left:39px}.pad-down{bottom:0;left:39px}.pad-left{top:36px;left:0}.pad-right{top:36px;right:0}.touch-actions{flex-direction:column;align-items:flex-end}.action-btn{border-radius:50%;width:61px;height:61px;font:800 10px 'Barlow Condensed';letter-spacing:1px}.action-btn.kick{background:#9efc61d9;color:#10200c;border:0;width:68px;height:68px}.game-over-title{color:var(--mint)}@media(max-width:720px){body{padding:12px 10px 24px}.matchbar{height:58px;padding:0 12px}.team{min-width:0;gap:7px}.team-copy{font-size:10px}.team-copy small{font-size:8px}.crest{width:29px;height:29px}.scorebox{gap:7px}.score{font-size:24px;min-width:61px}.clock{font-size:10px;min-width:33px}.edition{font-size:8px;padding:7px 9px}.topbar{margin-bottom:10px}.brand-name{font-size:18px}.bottom{grid-template-columns:1fr}.controls{justify-content:center;gap:12px}.challenge{padding:11px 13px}.touch-controls{display:flex}.status-chip{left:10px;top:9px;font-size:8px}.tide-chip{right:10px;top:9px;font-size:8px}.intro-card{padding:25px 22px}.intro-card h1{font-size:48px}.intro-card p{font-size:11px}.touch-controls{inset:auto 10px 8px}.touch-pad{transform:scale(.82);transform-origin:bottom left}.touch-actions{transform:scale(.86);transform-origin:bottom right}}@media(max-width:430px){.season{display:none}.team-copy small{display:none}.scorebox{gap:4px}.away .team-copy{max-width:70px}.controls{gap:7px}.control{font-size:8px}.key{font-size:9px;padding:4px 5px}.intro-meta{gap:9px;font-size:8px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar"><div class="brand"><div class="brand-mark">SL</div><div><div class="brand-name">SUPER <span>LEAGUE</span></div><div class="season">ARCADE DIVISION · SEASON 09</div></div></div><div class="edition">◆ &nbsp;EXHIBITION SERIES&nbsp; / &nbsp;01</div></header>
+  <section class="game-shell" aria-label="Super League match">
+    <div class="matchbar"><div class="team"><div class="crest">T</div><div class="team-copy">TIDAL CITY<small>HOME · YOU</small></div></div><div class="scorebox"><div class="score"><span id="homeScore">0</span><span class="sep">:</span><span id="awayScore">0</span></div><div class="clock" id="clock">01:30</div></div><div class="team away"><div class="team-copy">VOLT ATHLETIC<small>AWAY · CPU</small></div><div class="crest">V</div></div></div>
+    <div class="stage"><canvas id="game" width="1200" height="675" aria-label="Top-down football game"></canvas><div class="status-chip"><i class="status-dot"></i><span id="matchStatus">READY TO PLAY</span></div><div class="tide-chip">TIDE <b id="tideStatus">CALM</b></div>
+      <div class="overlay" id="overlay"><div class="intro-card"><div class="kicker" id="cardKicker">NEW LEVEL · TIDAL DOME</div><h1 id="cardTitle">MAKE<br><em>WAVES.</em></h1><p id="cardText">A storm-battered arena. Three goals to take the series. Time your runs between the incoming tide surges — and don't let Volt steal the show.</p><button class="primary" id="playButton">KICK OFF &nbsp; ↗</button><div class="intro-meta"><span>3 GOALS TO WIN</span><span>90 SECOND MATCH</span></div></div></div>
+      <div class="touch-controls" id="touchControls"><div class="touch-pad"><button class="pad-btn pad-up" data-dir="up">⌃</button><button class="pad-btn pad-down" data-dir="down">⌄</button><button class="pad-btn pad-left" data-dir="left">‹</button><button class="pad-btn pad-right" data-dir="right">›</button></div><div class="touch-actions"><button class="action-btn" data-action="dash">RIFT<br>STEP</button><button class="action-btn kick" data-action="kick">KICK</button></div></div>
+    </div>
+  </section>
+  <section class="bottom"><div class="challenge"><div class="challenge-icon">〰</div><div><strong>FRESH CHALLENGE: THE TIDAL SURGE</strong><small>Every 12 seconds, the current sweeps the pitch and bends loose balls.</small></div></div><div class="controls"><div class="control"><span class="key">WASD</span> MOVE</div><div class="control"><span class="key">SPACE</span> KICK</div><div class="control"><span class="key">E</span> RIFT STEP</div><div class="control"><span class="key">MOUSE</span> AIM</div></div></section>
+</main>
+<script>
+(() => {
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const W=1200,H=675, field={x:72,y:60,w:1056,h:555};
+const ui={overlay:document.getElementById('overlay'),play:document.getElementById('playButton'),title:document.getElementById('cardTitle'),text:document.getElementById('cardText'),kicker:document.getElementById('cardKicker'),home:document.getElementById('homeScore'),away:document.getElementById('awayScore'),clock:document.getElementById('clock'),status:document.getElementById('matchStatus'),tide:document.getElementById('tideStatus')};
+const keys={}, pointer={x:850,y:330,active:false};
+let running=false, ended=false, last=0, elapsed=0, timeLeft=90, homeScore=0, awayScore=0, tidePhase=0, tideActive=false, tideTimer=0, message='', messageTimer=0, particles=[];
+const player={x:300,y:337,vx:0,vy:0,r:20,faceX:1,faceY:0,dash:0,dashCd:0,invuln:0};
+const rival={x:860,y:337,vx:0,vy:0,r:21,faceX:-1,faceY:0,kickCd:0,stun:0};
+const keeper={x:1090,y:337};
+const ball={x:322,y:337,vx:0,vy:0,r:10,owner:'player',spin:0};
+const teammates=[{x:390,y:200,baseY:200},{x:430,y:490,baseY:490}];
+const opponents=[{x:775,y:200},{x:800,y:480}];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function start(){homeScore=awayScore=0;elapsed=0;timeLeft=90;tidePhase=0;tideActive=false;tideTimer=0;ended=false;running=true;resetPositions();ui.home.textContent='0';ui.away.textContent='0';ui.clock.textContent='01:30';ui.clock.classList.add('live');ui.status.textContent='LIVE · TIDAL DOME';ui.overlay.classList.add('hidden');last=performance.now();requestAnimationFrame(loop)}
+function resetPositions(){player.x=300;player.y=337;player.vx=player.vy=0;player.faceX=1;player.faceY=0;player.dash=0;player.dashCd=0;rival.x=860;rival.y=337;rival.kickCd=1;rival.stun=0;ball.x=322;ball.y=337;ball.vx=ball.vy=0;ball.owner='player';keeper.y=337;teammates[0].x=390;teammates[1].x=430}
+function showEnd(win){running=false;ended=true;ui.clock.classList.remove('live');ui.status.textContent=win?'SERIES WON':'MATCH COMPLETE';ui.kicker.textContent=win?'TIDAL DOME · VICTORY':'TIDAL DOME · FINAL WHISTLE';ui.title.innerHTML=win?'<em>WAVE</em><br>MAKERS.':'FULL<br><em>TIME.</em>';ui.text.textContent=win?`A huge result under the floodlights. Final score ${homeScore}–${awayScore}. The Tidal Dome is yours.`:`Final score ${homeScore}–${awayScore}. The tide had other plans — reset and take another shot at the series.`;ui.play.textContent='PLAY AGAIN  ↗';ui.overlay.classList.remove('hidden')}
+ui.play.addEventListener('click',start);
+function xy(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}}
+canvas.addEventListener('pointermove',e=>{const p=xy(e);pointer.x=p.x;pointer.y=p.y;pointer.active=true});
+canvas.addEventListener('pointerdown',e=>{if(!running)return;const p=xy(e);pointer.x=p.x;pointer.y=p.y;pointer.active=true;if(ball.owner==='player'&&dist(player,ball)<48)kick()});
+window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();if(!e.repeat&&running){if(k===' ')kick();if(k==='e'||k==='shift')dash()}});
+window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+document.querySelectorAll('.pad-btn').forEach(b=>{const key={up:'w',down:'s',left:'a',right:'d'}[b.dataset.dir];b.addEventListener('pointerdown',e=>{e.preventDefault();keys[key]=true;b.setPointerCapture(e.pointerId)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>keys[key]=false))});
+document.querySelectorAll('.action-btn').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();if(!running)return;if(b.dataset.action==='kick')kick();else dash()})});
+function kick(){if(!running||ball.owner!=='player')return;let ax=pointer.x-player.x,ay=pointer.y-player.y;if(!pointer.active||Math.hypot(ax,ay)<15){ax=player.faceX;ay=player.faceY}const len=Math.hypot(ax,ay)||1;ax/=len;ay/=len;const power=720+(player.dash>0?170:0);ball.owner=null;ball.x=player.x+ax*27;ball.y=player.y+ay*27;ball.vx=ax*power+player.vx*.45;ball.vy=ay*power+player.vy*.45;player.vx-=ax*100;player.vy-=ay*100;burst(ball.x,ball.y,'#b7ff72',8);message='STRIKE!';messageTimer=.55}
+function dash(){if(!running||player.dashCd>0)return;let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);if(!dx&&!dy){dx=player.faceX;dy=player.faceY}const l=Math.hypot(dx,dy)||1;player.vx=dx/l*680;player.vy=dy/l*680;player.dash=.22;player.dashCd=4.2;player.invuln=.32;burst(player.x,player.y,'#59e8f1',13);message='RIFT STEP';messageTimer=.7}
+function burst(x,y,color,n){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=50+Math.random()*240;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.35+Math.random()*.4,max:.75,color,r:2+Math.random()*4})}}
+function tick(dt){elapsed+=dt;timeLeft=Math.max(0,90-elapsed);ui.clock.textContent=`${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(Math.floor(timeLeft%60)).padStart(2,'0')}`;tideTimer+=dt;tidePhase+=dt;if(tideTimer>12){tideTimer-=12;tideActive=true;message='TIDAL SURGE';messageTimer=1.5;ui.tide.textContent='SURGING';burst(600,337,'#5fe9ef',36)}if(tideActive&&tideTimer>3.1){tideActive=false;ui.tide.textContent='CALM'}
+ player.dash=Math.max(0,player.dash-dt);player.dashCd=Math.max(0,player.dashCd-dt);player.invuln=Math.max(0,player.invuln-dt);rival.kickCd=Math.max(0,rival.kickCd-dt);rival.stun=Math.max(0,rival.stun-dt);messageTimer=Math.max(0,messageTimer-dt);
+ const dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0),n=Math.hypot(dx,dy)||1;const speed=player.dash?680:310;
+ if(dx||dy){player.faceX=dx/n;player.faceY=dy/n;player.vx+=(player.faceX*speed-player.vx)*Math.min(1,dt*(player.dash?12:9));player.vy+=(player.faceY*speed-player.vy)*Math.min(1,dt*(player.dash?12:9))}else if(!player.dash){player.vx*=Math.max(0,1-dt*7);player.vy*=Math.max(0,1-dt*7)}
+ player.x+=player.vx*dt;player.y+=player.vy*dt;player.x=clamp(player.x,field.x+22,field.x+field.w-22);player.y=clamp(player.y,field.y+24,field.y+field.h-24);
+ // The player can phase past a marker during Rift Step; close contact otherwise causes a shoulder check.
+ if(dist(player,rival)<player.r+rival.r+2){if(player.invuln>0){rival.stun=.85;rival.vx=player.vx*.38;rival.vy=player.vy*.38;if(ball.owner==='rival'){ball.owner='player';message='CLEAN TACKLE';messageTimer=.7}}else{const a=Math.atan2(rival.y-player.y,rival.x-player.x);player.x-=Math.cos(a)*2;player.y-=Math.sin(a)*2;rival.x+=Math.cos(a)*2;rival.y+=Math.sin(a)*2}}
+ teammates.forEach((m,i)=>{const targetX=clamp(player.x+115,230,670),targetY=m.baseY+(player.y-337)*.23;m.x+=(targetX-m.x)*dt*.6;m.y+=(targetY-m.y)*dt*.6});
+ if(ball.owner==='player'){ball.x=player.x+player.faceX*25;ball.y=player.y+player.faceY*25;ball.vx=player.vx;ball.vy=player.vy}
+ else if(ball.owner==='rival'){ball.x=rival.x+rival.faceX*27;ball.y=rival.y+rival.faceY*27;ball.vx=rival.vx;ball.vy=rival.vy}
+ else{if(tideActive){const tideDir=Math.sin(elapsed*.9)>0?1:-1;ball.vx+=tideDir*235*dt;ball.vy+=Math.sin(elapsed*1.6)*85*dt}ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;const damp=Math.pow(.984,dt*60);ball.vx*=damp;ball.vy*=damp;if(ball.y<field.y+11){ball.y=field.y+11;ball.vy=Math.abs(ball.vy)*.72}if(ball.y>field.y+field.h-11){ball.y=field.y+field.h-11;ball.vy=-Math.abs(ball.vy)*.72}}
+ // Chasing Volt striker; the keeper guards the goal mouth but can be beaten with a well-aimed shot.
+ if(rival.stun<=0){let tx=ball.x,ty=ball.y;if(ball.owner==='rival'){tx=player.x-20;ty=player.y}let rx=tx-rival.x,ry=ty-rival.y,rl=Math.hypot(rx,ry)||1;rival.faceX=rx/rl;rival.faceY=ry/rl;const rs=ball.owner==='rival'?150:225;rival.vx+=(rx/rl*rs-rival.vx)*dt*2.7;rival.vy+=(ry/rl*rs-rival.vy)*dt*2.7;rival.x+=rival.vx*dt;rival.y+=rival.vy*dt;rival.x=clamp(rival.x,field.x+95,field.x+field.w-105);rival.y=clamp(rival.y,field.y+30,field.y+field.h-30)}else{rival.vx*=.96;rival.vy*=.96;rival.x+=rival.vx*dt;rival.y+=rival.vy*dt}
+ if(ball.owner===null&&dist(ball,player)<player.r+ball.r+6){ball.owner='player';message='ON THE BALL';messageTimer=.5}
+ if(ball.owner===null&&dist(ball,rival)<rival.r+ball.r+6&&rival.stun<=0){if(player.invuln<=0){ball.owner='rival';message='VOLT POSSESSION';messageTimer=.7}}
+ if(ball.owner==='rival'&&rival.kickCd<=0&&dist(ball,{x:560,y:337})<390){const ax=field.x-10-rival.x,ay=337-rival.y,l=Math.hypot(ax,ay)||1;ball.owner=null;ball.x=rival.x+rival.faceX*30;ball.y=rival.y+rival.faceY*30;ball.vx=ax/l*590;ball.vy=ay/l*590;rival.kickCd=2.2;message='VOLT STRIKES';messageTimer=.65}
+ // Keeper tracks the ball and blocks most central attempts.
+ keeper.y+=(clamp(ball.y,field.y+field.h/2-72,field.y+field.h/2+72)-keeper.y)*dt*3.3;
+ if(ball.x>field.x+field.w-6&&ball.y>field.y+field.h/2-96&&ball.y<field.y+field.h/2+96){homeScore++;ui.home.textContent=homeScore;burst(1080,337,'#baff6b',40);goal('HOME GOAL!');return}
+ if(ball.x<field.x+6&&ball.y>field.y+field.h/2-96&&ball.y<field.y+field.h/2+96){awayScore++;ui.away.textContent=awayScore;burst(120,337,'#ff976b',35);goal('VOLT SCORES');return}
+ // keep balls in play at side/end walls
+ if(ball.x<field.x+6){ball.x=field.x+6;ball.vx=Math.abs(ball.vx)*.72}if(ball.x>field.x+field.w-6){ball.x=field.x+field.w-6;ball.vx=-Math.abs(ball.vx)*.72}
+ // Keeper collision
+ if(ball.x>field.x+field.w-48&&Math.abs(ball.y-keeper.y)<26&&ball.vx>0){ball.vx=-Math.abs(ball.vx)*.72;ball.vy+=(ball.y-keeper.y)*3;ball.x=field.x+field.w-49;burst(ball.x,ball.y,'#d7faff',7)}
+ if(ball.x<field.x+48&&Math.abs(ball.y-keeper.y)<26&&ball.vx<0){ball.vx=Math.abs(ball.vx)*.72;ball.vy+=(ball.y-keeper.y)*3;ball.x=field.x+49}
+ particles.forEach(p=>{p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.97;p.vy*=.97});particles=particles.filter(p=>p.life>0);
+ if(homeScore>=3){showEnd(true);return}if(timeLeft<=0){showEnd(homeScore>awayScore);return}
+}
+function goal(txt){message=txt;messageTimer=1.2;ball.owner='player';ball.x=player.x+player.faceX*25;ball.y=player.y+player.faceY*25;ball.vx=ball.vy=0;setTimeout(()=>{if(running)resetPositions()},850)}
+function loop(now){if(!running)return;const dt=Math.min(.033,(now-last)/1000||.016);last=now;tick(dt);draw();if(running)requestAnimationFrame(loop)}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ // deep-water stadium and floodlit haze
+ const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0b2132');bg.addColorStop(.52,'#0d2b37');bg.addColorStop(1,'#071923');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ const glow=ctx.createRadialGradient(590,320,40,590,320,620);glow.addColorStop(0,'#1b63504a');glow.addColorStop(1,'#07111e00');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+ // seating tiers
+ for(let row=0;row<5;row++){ctx.fillStyle=row%2?'#142d3b':'#18313e';ctx.fillRect(0,30+row*6,W,4);ctx.fillRect(0,H-56+row*6,W,4)}
+ // small crowd lights
+ for(let i=0;i<110;i++){const x=(i*127.3)%W,y=(i*73.9)%(field.y-8);ctx.fillStyle=['#b8e4d533','#63e9ed33','#ffb96a22'][i%3];ctx.fillRect(x,y,2,2);ctx.fillRect(x,H-y,2,2)}
+ // touchline shadow and pitch
+ ctx.save();ctx.shadowColor='#0009';ctx.shadowBlur=22;ctx.shadowOffsetY=10;rr(field.x,field.y,field.w,field.h,12);ctx.fillStyle='#0c332f';ctx.fill();ctx.restore();
+ ctx.save();rr(field.x,field.y,field.w,field.h,12);ctx.clip();
+ const g=ctx.createLinearGradient(field.x,field.y,field.x+field.w,field.y+field.h);g.addColorStop(0,'#147056');g.addColorStop(.5,'#12684f');g.addColorStop(1,'#0f5949');ctx.fillStyle=g;ctx.fillRect(field.x,field.y,field.w,field.h);
+ for(let i=0;i<12;i++){ctx.fillStyle=i%2?'#ffffff05':'#001f1b08';ctx.fillRect(field.x+i*field.w/12,field.y,field.w/12,field.h)}
+ // subtle tide glow sweeping across the pitch
+ if(tideActive){const progress=clamp((tideTimer-.15)/2.8,0,1),x=field.x+progress*field.w;const wave=ctx.createLinearGradient(x-190,0,x+130,0);wave.addColorStop(0,'#27deea00');wave.addColorStop(.48,'#35d9df21');wave.addColorStop(1,'#27deea00');ctx.fillStyle=wave;ctx.fillRect(field.x,field.y,field.w,field.h);ctx.strokeStyle='#7bf4ed24';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,field.y);ctx.lineTo(x,field.y+field.h);ctx.stroke()}
+ ctx.strokeStyle='#d9fff0a8';ctx.lineWidth=2;ctx.strokeRect(field.x+1,field.y+1,field.w-2,field.h-2);
+ // markings
+ ctx.beginPath();ctx.moveTo(W/2,field.y);ctx.lineTo(W/2,field.y+field.h);ctx.stroke();ctx.beginPath();ctx.arc(W/2,H/2,76,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#e5fff0';ctx.beginPath();ctx.arc(W/2,H/2,3,0,Math.PI*2);ctx.fill();
+ const boxY=H/2-142;ctx.strokeRect(field.x,boxY,140,284);ctx.strokeRect(field.x+field.w-140,boxY,140,284);ctx.strokeRect(field.x, H/2-78,54,156);ctx.strokeRect(field.x+field.w-54,H/2-78,54,156);ctx.beginPath();ctx.arc(field.x+108,H/2,3,0,Math.PI*2);ctx.arc(field.x+field.w-108,H/2,3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(field.x+108,H/2,58,-.92,.92);ctx.stroke();ctx.beginPath();ctx.arc(field.x+field.w-108,H/2,58,Math.PI-.92,Math.PI+.92);ctx.stroke();
+ // goal mouths with luminous frames
+ ctx.fillStyle='#a1f7e928';ctx.fillRect(field.x-14,H/2-96,14,192);ctx.fillRect(field.x+field.w,H/2-96,14,192);ctx.strokeStyle='#baf9e8';ctx.lineWidth=3;ctx.strokeRect(field.x-14,H/2-96,14,192);ctx.strokeRect(field.x+field.w,H/2-96,14,192);
+ for(let yy=H/2-88;yy<H/2+90;yy+=14){ctx.strokeStyle='#baf9e822';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(field.x-12,yy);ctx.lineTo(field.x,yy);ctx.moveTo(field.x+field.w,yy);ctx.lineTo(field.x+field.w+12,yy);ctx.stroke()}
+ // moving current marks
+ if(tideActive){for(let i=0;i<17;i++){const x=((i*91+elapsed*180)%W);const y=field.y+30+(i*61)% (field.h-60);ctx.strokeStyle='#93ffff35';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+10,y-8,x+22,y);ctx.quadraticCurveTo(x+33,y+8,x+45,y);ctx.stroke()}}
+ ctx.restore();
+ // support players
+ teammates.forEach((m,i)=>drawPlayer(m.x,m.y,'#76e4e6',i?'8':'6',false));opponents.forEach((m,i)=>drawPlayer(m.x,m.y,'#f28a64',i?'4':'7',false));
+ // Goalkeeper
+ ctx.save();ctx.shadowColor='#89fcff';ctx.shadowBlur=18;drawPlayer(keeper.x,keeper.y,'#d7f4ff','1',true);ctx.restore();
+ // Rival and player
+ if(rival.stun>0){ctx.strokeStyle='#ffbb74';ctx.lineWidth=2;ctx.beginPath();ctx.arc(rival.x,rival.y-35,12+Math.sin(elapsed*18)*3,0,Math.PI*2);ctx.stroke()}
+ drawPlayer(rival.x,rival.y,'#ff8159','9',true);
+ if(player.dash>0){ctx.save();ctx.globalAlpha=.38;for(let i=3;i>0;i--){drawPlayer(player.x-player.vx*.012*i,player.y-player.vy*.012*i,'#56eff2','',false)}ctx.restore()}
+ if(player.dashCd>0){ctx.beginPath();ctx.arc(player.x,player.y,player.r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*(1-player.dashCd/4.2));ctx.strokeStyle='#b7ff72aa';ctx.lineWidth=3;ctx.stroke()}
+ if(player.invuln>0){ctx.strokeStyle='#62f7ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(player.x,player.y,player.r+8,0,Math.PI*2);ctx.stroke()}
+ drawPlayer(player.x,player.y,'#a4ff63','10',true);
+ // Aim line and power halo
+ if(running&&ball.owner==='player'){let ax=pointer.x-player.x,ay=pointer.y-player.y,l=Math.hypot(ax,ay)||1;ax/=l;ay/=l;ctx.setLineDash([6,8]);ctx.strokeStyle='#c9ff9c6a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ball.x,ball.y);ctx.lineTo(ball.x+ax*120,ball.y+ay*120);ctx.stroke();ctx.setLineDash([])}
+ // ball and motion streak
+ if(ball.owner===null&&Math.hypot(ball.vx,ball.vy)>180){ctx.strokeStyle='#eaffd833';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(ball.x-ball.vx*.035,ball.y-ball.vy*.035);ctx.lineTo(ball.x,ball.y);ctx.stroke()}
+ ctx.save();ctx.shadowColor='#fff';ctx.shadowBlur=14;ctx.fillStyle='#f7fbef';ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();ctx.restore();ctx.strokeStyle='#142c2c';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r*.48,0,Math.PI*2);ctx.stroke();ctx.beginPath();for(let i=0;i<5;i++){const a=i*Math.PI*2/5+elapsed*2;ctx.moveTo(ball.x,ball.y);ctx.lineTo(ball.x+Math.cos(a)*ball.r*.43,ball.y+Math.sin(a)*ball.r*.43)}ctx.stroke();
+ // player name tags and ability meter
+ tag(player.x,player.y-37,'YOU','#baff70');tag(rival.x,rival.y-38,'VOLT','#ff9a79');
+ const barW=140;ctx.fillStyle='#04121dba';rr(W/2-barW/2,H-40,barW,23,11);ctx.fill();ctx.fillStyle=player.dashCd<=0?'#a7ff68':'#59dfe5';rr(W/2-barW/2+4,H-36,(barW-8)*(player.dashCd<=0?1:1-player.dashCd/4.2),15,8);ctx.fill();ctx.fillStyle='#07141c';ctx.font='800 10px Manrope';ctx.textAlign='center';ctx.fillText(player.dashCd<=0?'E   RIFT STEP READY':`RIFT STEP  ${player.dashCd.toFixed(1)}s`,W/2,H-25);
+ particles.forEach(p=>{ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
+ if(messageTimer>0){ctx.save();ctx.globalAlpha=Math.min(1,messageTimer*2);ctx.textAlign='center';ctx.font='900 30px "Barlow Condensed"';ctx.letterSpacing='2px';ctx.shadowColor='#06111e';ctx.shadowBlur=14;ctx.fillStyle=message.includes('VOLT')?'#ff9b78':'#c6ff8c';ctx.fillText(message,W/2,field.y+50);ctx.restore()}
+ // tiny pitchside lights
+ for(let i=0;i<8;i++){const x=field.x+35+i*140;ctx.fillStyle=i%2?'#68e5e9':'#baff70';ctx.globalAlpha=.48+.25*Math.sin(elapsed*2+i);ctx.beginPath();ctx.arc(x,field.y-8,2.4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(x,field.y+field.h+8,2.4,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
+}
+function drawPlayer(x,y,color,num,active){ctx.save();ctx.translate(x,y);ctx.fillStyle='#04151188';ctx.beginPath();ctx.ellipse(2,8,22,15,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=color;ctx.shadowBlur=active?13:7;ctx.fillStyle=color;ctx.beginPath();ctx.arc(0,0,active?19:15,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#ffffffa0';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#102029';ctx.font=`800 ${active?13:11}px "Barlow Condensed"`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(num,0,1);if(active){ctx.strokeStyle='#eaffd9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-6,-18);ctx.lineTo(0,-24);ctx.lineTo(6,-18);ctx.stroke()}ctx.restore()}
+function tag(x,y,text,color){ctx.save();ctx.font='700 9px "DM Mono"';ctx.textAlign='center';const w=ctx.measureText(text).width+14;ctx.fillStyle='#07131dcc';rr(x-w/2,y-8,w,16,5);ctx.fill();ctx.fillStyle=color;ctx.textBaseline='middle';ctx.fillText(text,x,y+.5);ctx.restore()}
+// idle stadium animation while the intro card is up
+function idle(){if(running)return;elapsed+=.016;draw();requestAnimationFrame(idle)}
+idle();
+})();
+</script>
+</body>
+</html>
