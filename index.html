@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#11351f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2313351f'/%3E%3Cpath d='M6 20h20v6H6z' fill='%237b5233'/%3E%3Cpath d='M6 12h20v8H6z' fill='%235daa3e'/%3E%3C/svg%3E">
+<title>Voxel Dünya — 3D Sandbox</title>
+<style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+        margin: 0; overflow: hidden; background: #cfe8f5; color: #fff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+        touch-action: none; overscroll-behavior: none;
+    }
+    button { font: inherit; color: inherit; }
+    #game { display: block; position: fixed; inset: 0; width: 100%; height: 100%; outline: none; }
+
+    /* ---------- HUD ---------- */
+    #crosshair {
+        position: fixed; left: 50%; top: 50%; width: 18px; height: 18px;
+        transform: translate(-50%, -50%); pointer-events: none; z-index: 6;
+        opacity: .45; transition: opacity .2s;
+    }
+    body.playing #crosshair { opacity: .96; }
+    #crosshair::before, #crosshair::after {
+        content: ""; position: absolute; background: #fff;
+        box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 0 5px rgba(0,0,0,.5);
+    }
+    #crosshair::before { left: 0; top: 8px; width: 18px; height: 2px; }
+    #crosshair::after { top: 0; left: 8px; width: 2px; height: 18px; }
+
+    #hint {
+        position: fixed; left: max(16px, env(safe-area-inset-left));
+        top: max(16px, env(safe-area-inset-top));
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 14px; border-radius: 999px;
+        background: rgba(8,20,13,.48); border: 1px solid rgba(255,255,255,.16);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        font-size: 12.5px; letter-spacing: .2px; color: rgba(240,250,235,.85);
+        pointer-events: none; z-index: 7; opacity: 0; transform: translateY(-6px);
+        transition: opacity .25s, transform .25s;
+    }
+    body.playing #hint { opacity: 1; transform: none; }
+    #hint .dot {
+        width: 7px; height: 7px; border-radius: 50%; background: #9be564;
+        box-shadow: 0 0 10px #9be564;
+    }
+    #hint b { color: #b6ef85; font-weight: 700; }
+
+    #mobile-tools {
+        display: none; position: fixed;
+        top: max(14px, env(safe-area-inset-top));
+        right: max(14px, env(safe-area-inset-right));
+        gap: 8px; z-index: 9;
+    }
+    body.touch #mobile-tools { display: flex; }
+    #mobile-tools button {
+        width: 42px; height: 42px; padding: 0; border-radius: 50%;
+        display: grid; place-items: center; cursor: pointer; pointer-events: auto;
+        border: 1px solid rgba(255,255,255,.26); background: rgba(8,20,13,.5);
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        color: #fff; font-size: 17px; line-height: 1;
+        box-shadow: 0 6px 16px rgba(0,0,0,.3);
+        transition: transform .08s, background .08s;
+    }
+    #mobile-tools button:active { transform: scale(.94); background: rgba(150,231,102,.26); }
+
+    /* ---------- Hotbar ---------- */
+    #hotbar {
+        position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom));
+        transform: translateX(-50%); display: flex; gap: 6px; padding: 7px;
+        background: rgba(7,15,11,.55); border: 1px solid rgba(255,255,255,.16);
+        border-radius: 13px; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+        z-index: 7; box-shadow: 0 14px 34px rgba(0,0,0,.35);
+    }
+    .slot {
+        position: relative; width: 54px; height: 56px; padding: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+        border: 2px solid rgba(255,255,255,.17); border-radius: 9px;
+        background: rgba(255,255,255,.055); color: #eaf7e4; cursor: pointer;
+        transition: transform .12s, border-color .12s, background .12s, box-shadow .12s;
+    }
+    .slot:hover { background: rgba(255,255,255,.12); }
+    .slot.active {
+        border-color: #96e766;
+        background: linear-gradient(180deg, rgba(150,231,102,.3), rgba(150,231,102,.07));
+        transform: translateY(-3px);
+        box-shadow: 0 7px 18px rgba(0,0,0,.4), inset 0 0 0 2px rgba(150,231,102,.18);
+    }
+    .slot .swatch {
+        width: 22px; height: 22px; border-radius: 4px;
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,.28), 0 1px 2px rgba(0,0,0,.25);
+        image-rendering: pixelated;
+    }
+    .slot .label { font-size: 9.5px; font-weight: 600; letter-spacing: .2px; opacity: .88; }
+    .slot .num { position: absolute; top: 2px; left: 5px; font-size: 9px; opacity: .5; }
+    .t1 { background: linear-gradient(#63b447 0 34%, #7a5233 34% 100%); }
+    .t2 { background: #7a5233; }
+    .t3 { background: #8c9094; }
+    .t4 { background: repeating-linear-gradient(90deg, #9b6a3b 0 4px, #865a30 4px 6px); }
+    .t5 { background: #3f8b35; }
+    .t6 { background: repeating-linear-gradient(0deg, #a94a34 0 5px, #d9c7b2 5px 7px); }
+    .t7 { background: radial-gradient(circle at 32% 28%, #fff3a0, #e8bd3f 55%, #bd8f20); }
+    .t8 { background: linear-gradient(135deg, rgba(220,246,252,.85), rgba(148,211,227,.42)); border: 1px solid rgba(255,255,255,.7); }
+
+    /* ---------- Touch controls ---------- */
+    #touch-ui { display: none; position: fixed; inset: 0; z-index: 8; pointer-events: none; }
+    body.touch #touch-ui { display: block; }
+    #joystick {
+        position: absolute; left: calc(18px + env(safe-area-inset-left));
+        bottom: calc(22px + env(safe-area-inset-bottom));
+        width: 116px; height: 116px; border-radius: 50%;
+        background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.15), rgba(255,255,255,.045));
+        border: 2px solid rgba(255,255,255,.26); pointer-events: auto; touch-action: none;
+        box-shadow: inset 0 0 22px rgba(0,0,0,.25);
+    }
+    #joystick::after {
+        content: ""; position: absolute; inset: 25%; border-radius: 50%;
+        border: 1px dashed rgba(255,255,255,.14);
+    }
+    #knob {
+        position: absolute; left: 50%; top: 50%; width: 50px; height: 50px;
+        margin: -25px 0 0 -25px; border-radius: 50%;
+        background: radial-gradient(circle at 36% 30%, rgba(255,255,255,.55), rgba(255,255,255,.22));
+        border: 2px solid rgba(255,255,255,.55);
+        box-shadow: 0 5px 14px rgba(0,0,0,.35); pointer-events: none;
+    }
+    .touch-btn {
+        position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        border-radius: 50%; border: 2px solid rgba(255,255,255,.28);
+        background: rgba(8,18,12,.5); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+        pointer-events: auto; touch-action: none; box-shadow: 0 8px 20px rgba(0,0,0,.3);
+        transition: transform .08s, background .08s;
+    }
+    .touch-btn:active, .touch-btn.pressed { transform: scale(.93); background: rgba(150,231,102,.26); }
+    .touch-btn small { font-size: 9.5px; font-weight: 700; letter-spacing: .4px; color: rgba(255,255,255,.72); margin-top: 1px; }
+    #btnBreak { right: calc(102px + env(safe-area-inset-right)); bottom: calc(26px + env(safe-area-inset-bottom)); width: 66px; height: 66px; font-size: 23px; }
+    #btnPlace { right: calc(22px + env(safe-area-inset-right)); bottom: calc(38px + env(safe-area-inset-bottom)); width: 68px; height: 68px; font-size: 24px; }
+    #btnJump { right: calc(26px + env(safe-area-inset-right)); bottom: calc(122px + env(safe-area-inset-bottom)); width: 58px; height: 58px; font-size: 20px; }
+
+    /* ---------- Toast ---------- */
+    #toast {
+        position: fixed; left: 50%; bottom: calc(104px + env(safe-area-inset-bottom));
+        transform: translate(-50%, 10px); z-index: 15; pointer-events: none;
+        padding: 9px 16px; border-radius: 999px; font-size: 13px;
+        background: rgba(7,15,11,.86); border: 1px solid rgba(255,255,255,.18);
+        box-shadow: 0 10px 26px rgba(0,0,0,.35);
+        opacity: 0; transition: opacity .2s, transform .2s;
+    }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ---------- Overlay ---------- */
+    #overlay {
+        position: fixed; inset: 0; z-index: 20; display: grid; place-items: center;
+        padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+        background: radial-gradient(ellipse at 50% 32%, rgba(18,48,31,.5), rgba(2,8,6,.9) 78%);
+        backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+        transition: opacity .22s;
+    }
+    #overlay.hidden { opacity: 0; pointer-events: none; }
+    .panel {
+        position: relative; width: min(560px, 94vw); overflow: hidden;
+        padding: 34px 36px 26px; text-align: center;
+        background: linear-gradient(180deg, rgba(17,32,24,.94), rgba(7,15,11,.97));
+        border: 1px solid rgba(150,231,102,.38); border-radius: 18px;
+        box-shadow: 0 34px 90px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.07);
+    }
+    .panel::before {
+        content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(circle at 50% -10%, rgba(150,231,102,.16), transparent 55%);
+    }
+    .eyebrow {
+        display: inline-block; margin-bottom: 12px; padding: 4px 12px; border-radius: 999px;
+        font-size: 10.5px; font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase;
+        color: #b6ef85; background: rgba(150,231,102,.1); border: 1px solid rgba(150,231,102,.3);
+    }
+    h1 {
+        margin: 0 0 10px; font-size: clamp(32px, 6vw, 47px); line-height: .98;
+        letter-spacing: -1.4px; font-weight: 800; color: #f3fbef;
+        text-shadow: 0 5px 24px rgba(150,231,102,.22);
+    }
+    h1 span { color: #9be564; }
+    .sub { margin: 0 auto 22px; max-width: 380px; font-size: 14.5px; line-height: 1.45; color: rgba(230,245,225,.64); }
+    #startBtn {
+        position: relative; padding: 14px 52px; border: 0; border-radius: 10px;
+        font-size: 17px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
+        color: #0b1a0f; background: linear-gradient(180deg, #b2f57a, #74d141); cursor: pointer;
+        box-shadow: 0 6px 0 #3d7d20, 0 18px 34px rgba(0,0,0,.4);
+        transition: transform .1s, box-shadow .1s, filter .15s;
+    }
+    #startBtn:hover { filter: brightness(1.06); }
+    #startBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #3d7d20; }
+    .controls {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 9px 20px;
+        margin: 24px auto 0; max-width: 430px; text-align: left;
+        font-size: 12.5px; color: rgba(230,245,225,.78);
+    }
+    .controls div { display: flex; align-items: center; gap: 8px; }
+    .kbd {
+        display: inline-flex; align-items: center; justify-content: center; min-width: 23px; height: 23px;
+        padding: 0 6px; border-radius: 5px; font-size: 11px; font-weight: 700; color: #eaf7e4;
+        background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.2);
+        box-shadow: 0 2px 0 rgba(0,0,0,.28);
+    }
+    .note { margin-top: 18px; font-size: 11.5px; color: rgba(230,245,225,.42); }
+    #resetBtn {
+        display: none; margin: 16px auto 0; padding: 8px 18px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.06);
+        color: rgba(240,250,235,.8); font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    #resetBtn:hover { background: rgba(255,255,255,.12); }
+    #overlay.paused #resetBtn { display: block; }
+    .controls .touch-only, #hint .touch-only { display: none; }
+    body.touch .desktop-only { display: none; }
+    body.touch .controls .touch-only, body.touch #hint .touch-only { display: flex; }
+
+    @media (max-width: 720px) {
+        .panel { padding: 28px 22px 22px; }
+        .controls { font-size: 11.5px; gap: 8px 12px; }
+        #startBtn { padding: 13px 42px; font-size: 15.5px; }
+        #hint { display: none; }
+        #hotbar {
+            gap: 4px; padding: 6px 7px;
+        }
+        .slot { width: 37px; height: 39px; border-radius: 7px; gap: 0; }
+        .slot .swatch { width: 21px; height: 21px; }
+        .slot .label { display: none; }
+        .slot .num { top: 1px; left: 3px; font-size: 8px; }
+    }
+    body.touch #hotbar { bottom: calc(202px + env(safe-area-inset-bottom)); }
+    body.touch #toast { bottom: calc(268px + env(safe-area-inset-bottom)); }
+    @media (max-width: 400px) {
+        .slot { width: 34px; height: 37px; }
+        #hotbar { gap: 3px; padding: 5px 6px; }
+    }
+    @media (max-height: 520px) and (pointer: coarse) {
+        body.touch #hotbar { bottom: calc(96px + env(safe-area-inset-bottom)); }
+        body.touch #toast { bottom: calc(170px + env(safe-area-inset-bottom)); }
+        #joystick { width: 92px; height: 92px; }
+        #knob { width: 42px; height: 42px; margin: -21px 0 0 -21px; }
+        .controls { display: none; }
+    }
+</style>
+</head>
+<body>
+    <div id="crosshair"></div>
+
+    <div id="hint">
+        <span class="dot"></span>
+        <span class="desktop-only"><b>Sol tık</b> kır &nbsp;·&nbsp; <b>Sağ tık</b> koy &nbsp;·&nbsp; <b>1–8</b> blok</span>
+        <span class="touch-only">Joystick ile yürü · ekranı sürükleyerek bak</span>
+    </div>
+
+    <div id="mobile-tools">
+        <button id="menuBtn" aria-label="Menü">☰</button>
+        <button id="soundBtn" aria-label="Sesi kapat">🔊</button>
+    </div>
+
+    <div id="hotbar" role="toolbar" aria-label="Blok seçimi">
+        <button class="slot active" data-id="1" aria-label="Çim bloğu" aria-pressed="true"><span class="swatch t1"></span><span class="label">Çim</span><span class="num">1</span></button>
+        <button class="slot" data-id="2" aria-label="Toprak bloğu" aria-pressed="false"><span class="swatch t2"></span><span class="label">Toprak</span><span class="num">2</span></button>
+        <button class="slot" data-id="3" aria-label="Taş bloğu" aria-pressed="false"><span class="swatch t3"></span><span class="label">Taş</span><span class="num">3</span></button>
+        <button class="slot" data-id="4" aria-label="Tahta bloğu" aria-pressed="false"><span class="swatch t4"></span><span class="label">Tahta</span><span class="num">4</span></button>
+        <button class="slot" data-id="5" aria-label="Yaprak bloğu" aria-pressed="false"><span class="swatch t5"></span><span class="label">Yaprak</span><span class="num">5</span></button>
+        <button class="slot" data-id="6" aria-label="Tuğla bloğu" aria-pressed="false"><span class="swatch t6"></span><span class="label">Tuğla</span><span class="num">6</span></button>
+        <button class="slot" data-id="7" aria-label="Altın bloğu" aria-pressed="false"><span class="swatch t7"></span><span class="label">Altın</span><span class="num">7</span></button>
+        <button class="slot" data-id="8" aria-label="Cam bloğu" aria-pressed="false"><span class="swatch t8"></span><span class="label">Cam</span><span class="num">8</span></button>
+    </div>
+
+    <div id="touch-ui" aria-hidden="true">
+        <div id="joystick"><div id="knob"></div></div>
+        <button class="touch-btn" id="btnBreak" aria-label="Blok kır">⛏<small>KIR</small></button>
+        <button class="touch-btn" id="btnPlace" aria-label="Blok koy">▣<small>KOY</small></button>
+        <button class="touch-btn" id="btnJump" aria-label="Zıpla">↑<small>ZIPLA</small></button>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <div id="overlay">
+        <div class="panel">
+            <span class="eyebrow">3D Voxel Sandbox</span>
+            <h1>VOXEL <span>DÜNYA</span></h1>
+            <p class="sub">Blokları kır, yeni katmanlar ekle ve kendi adanı inşa et. Küçük bir dünya, sonsuz hayal gücü.</p>
+            <button id="startBtn" aria-label="Start">Oyna</button>
+            <div class="controls">
+                <div class="desktop-only"><span class="kbd">W A S D</span> Hareket</div>
+                <div class="desktop-only"><span class="kbd">Boşluk</span> Zıpla</div>
+                <div class="desktop-only"><span class="kbd">Sol tık</span> Blok kır</div>
+                <div class="desktop-only"><span class="kbd">Sağ tık</span> Blok koy</div>
+                <div class="desktop-only"><span class="kbd">1–8</span> Blok seç</div>
+                <div class="desktop-only"><span class="kbd">R</span> Dünyayı yenile</div>
+                <div class="desktop-only"><span class="kbd">M</span> Ses aç / kapat</div>
+                <div class="touch-only"><span class="kbd">Sol</span> Joystick: hareket</div>
+                <div class="touch-only"><span class="kbd">Sürükle</span> Etrafa bak</div>
+                <div class="touch-only"><span class="kbd">KIR</span> Blok kır</div>
+                <div class="touch-only"><span class="kbd">KOY</span> Blok koy</div>
+                <div class="touch-only"><span class="kbd">ZIPLA</span> Zıpla</div>
+                <div class="touch-only"><span class="kbd">Dokun</span> Blok seç</div>
+            </div>
+            <button id="resetBtn" aria-label="Reset world">Dünyayı sıfırla</button>
+            <p class="note">Masaüstünde fareyi kilitlemek için tıkla · Mobilde dokunmatik kontroller açılır</p>
+        </div>
+    </div>
+
+    <script src="vendor/three.min.js"></script>
+    <script>
+'use strict';
+
+/* ============================================================
+   Voxel Dünya — tek dosyalık 3D voxel sandbox
+   Three.js r128 · yerel olarak vendor/three.min.js içinde
+   ============================================================ */
+
+const isPortraitWindow = innerWidth <= 720 && innerHeight > innerWidth;
+const isCoarse = window.matchMedia('(pointer: coarse)').matches ||
+                 (navigator.maxTouchPoints > 0 && 'ontouchstart' in window) ||
+                 isPortraitWindow;
+if (isCoarse) document.body.classList.add('touch');
+
+const WORLD = 16;
+const EYE = 1.62;
+const PLAYER_R = 0.3;
+const PLAYER_H = 1.78;
+const GRAVITY = 30;
+const JUMP_SPEED = 9.2;
+const WALK_SPEED = 5.3;
+const REACH = 7.5;
+const SKY_TOP = 0x2f6fa8;
+const HORIZON = 0xcfe8f5;
+const SPAWN_X = 8.5;
+const SPAWN_Z = 13.5;
+
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+/* ---------------- Renderer & sahne ---------------- */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(HORIZON);
+scene.fog = new THREE.FogExp2(HORIZON, 0.0125);
+
+const camera = new THREE.PerspectiveCamera(74, innerWidth / innerHeight, 0.08, 600);
+camera.rotation.order = 'YXZ';
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.domElement.id = 'game';
+renderer.domElement.setAttribute('aria-label', '3D voxel oyun alanı');
+renderer.shadowMap.enabled = !isCoarse;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.insertBefore(renderer.domElement, document.body.firstChild);
+
+/* Gökyüzü degradesi */
+const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(320, 24, 16),
+    new THREE.ShaderMaterial({
+        side: THREE.BackSide, depthWrite: false, fog: false,
+        uniforms: {
+            topColor: { value: new THREE.Color(SKY_TOP) },
+            horizonColor: { value: new THREE.Color(HORIZON) }
+        },
+        vertexShader: `
+            varying vec3 vWorld;
+            void main() {
+                vec4 wp = modelMatrix * vec4(position, 1.0);
+                vWorld = wp.xyz;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }`,
+        fragmentShader: `
+            uniform vec3 topColor;
+            uniform vec3 horizonColor;
+            varying vec3 vWorld;
+            void main() {
+                float h = normalize(vWorld).y;
+                float t = pow(clamp(h * 1.55 + 0.14, 0.0, 1.0), 0.82);
+                gl_FragColor = vec4(mix(horizonColor, topColor, t), 1.0);
+            }`
+    })
+);
+scene.add(sky);
+
+/* Işıklar */
+const hemi = new THREE.HemisphereLight(0xe3f6ff, 0x6b5a42, 0.6);
+scene.add(hemi);
+
+const sunLight = new THREE.DirectionalLight(0xfff4dd, 0.75);
+sunLight.position.set(24, 38, 16);
+sunLight.target.position.set(8, 3, 8);
+scene.add(sunLight);
+scene.add(sunLight.target);
+
+if (!isCoarse) {
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.set(2048, 2048);
+    const sc = sunLight.shadow.camera;
+    sc.left = -24; sc.right = 24; sc.top = 24; sc.bottom = -24;
+    sc.near = 1; sc.far = 110;
+    sunLight.shadow.bias = -0.0006;
+    sunLight.shadow.normalBias = 0.02;
+}
+
+/* Güneş parlaması */
+function makeGlowTexture() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0.00, 'rgba(255,255,248,1)');
+    g.addColorStop(0.22, 'rgba(255,248,208,.95)');
+    g.addColorStop(0.50, 'rgba(255,240,170,.32)');
+    g.addColorStop(1.00, 'rgba(255,238,160,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+}
+const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeGlowTexture(), color: 0xfff7d6, transparent: true,
+    depthWrite: false, fog: false, blending: THREE.AdditiveBlending
+}));
+sunGlow.scale.set(40, 40, 1);
+sunGlow.position.set(-12, 58, -125);
+scene.add(sunGlow);
+
+/* ---------------- Su ve bulutlar ---------------- */
+const water = new THREE.Mesh(
+    new THREE.PlaneGeometry(650, 650),
+    new THREE.MeshPhongMaterial({
+        color: 0x2e86c8, transparent: true, opacity: 0.82,
+        shininess: 95, specular: 0xaee4ff
+    })
+);
+water.rotation.x = -Math.PI / 2;
+water.position.y = 2.15;
+scene.add(water);
+
+const cloudMat = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.93 });
+const clouds = [];
+function seeded(seed) {
+    let a = seed >>> 0;
+    return function () {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+function addCloud(x, y, z, scale, seed) {
+    const rnd = seeded(seed);
+    const group = new THREE.Group();
+    const count = 4 + Math.floor(rnd() * 3);
+    for (let i = 0; i < count; i++) {
+        const w = (1.6 + rnd() * 2.6) * scale;
+        const h = (0.6 + rnd() * 0.8) * scale;
+        const d = (1.4 + rnd() * 2.4) * scale;
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), cloudMat);
+        cube.position.set(
+            (rnd() - 0.5) * 7.5 * scale,
+            (rnd() - 0.5) * 1.1 * scale,
+            (rnd() - 0.5) * 5.0 * scale
+        );
+        group.add(cube);
+    }
+    group.position.set(x, y, z);
+    scene.add(group);
+    clouds.push({ group, speed: 0.35 + rnd() * 0.4 });
+}
+addCloud(-12, 27, -34, 1.15, 11);
+addCloud(-38, 31, -52, 1.45, 22);
+addCloud(18, 30, -46, 1.25, 33);
+addCloud(44, 28, 4, 1.1, 44);
+addCloud(-40, 33, 10, 1.35, 55);
+addCloud(6, 34, -70, 1.6, 66);
+
+/* ---------------- Blok dokuları ---------------- */
+function mulberry32(a) {
+    a |= 0;
+    return function () {
+        a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+function makeTex(size, painter, seed) {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    painter(ctx, size, mulberry32(seed));
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+    return tex;
+}
+function noiseFill(ctx, size, colors, rnd, density) {
+    ctx.fillStyle = colors[0];
+    ctx.fillRect(0, 0, size, size);
+    const n = Math.floor(size * size * (density || 0.42));
+    for (let i = 0; i < n; i++) {
+        ctx.fillStyle = colors[1 + Math.floor(rnd() * (colors.length - 1))];
+        const s = 1 + Math.floor(rnd() * 2);
+        ctx.fillRect(Math.floor(rnd() * size), Math.floor(rnd() * size), s, s);
+    }
+}
+
+const TEX = {};
+
+TEX.grassTop = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#41772d', '#4a8233', '#356524', '#548f3b', '#2c5a1d'], rnd, 0.55);
+    for (let i = 0; i < 14; i++) {
+        ctx.fillStyle = rnd() > 0.5 ? '#6bb04e' : '#366725';
+        ctx.fillRect(Math.floor(rnd() * size), Math.floor(rnd() * size), 1, 2);
+    }
+}, 101);
+
+TEX.dirt = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#7b5233', '#8a6040', '#6b472b', '#946a48', '#5e3e26'], rnd, 0.5);
+    for (let i = 0; i < 8; i++) {
+        ctx.fillStyle = '#a07a55';
+        ctx.fillRect(Math.floor(rnd() * size), Math.floor(rnd() * size), 2, 1);
+    }
+}, 202);
+
+TEX.grassSide = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#7b5233', '#8a6040', '#6b472b', '#946a48'], rnd, 0.45);
+    for (let x = 0; x < size; x++) {
+        const depth = 7 + Math.floor(rnd() * 5) + (rnd() < 0.18 ? 2 : 0);
+        ctx.fillStyle = ['#41772d', '#4a8233', '#356524'][Math.floor(rnd() * 3)];
+        ctx.fillRect(x, 0, 1, depth);
+        if (rnd() < 0.18) {
+            ctx.fillStyle = '#356524';
+            ctx.fillRect(x, depth, 1, 2);
+        }
+    }
+    ctx.fillStyle = '#2f581f';
+    ctx.fillRect(0, 0, size, 1);
+}, 303);
+
+TEX.stone = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#7e8286', '#888c90', '#707478', '#93989b', '#65696d'], rnd, 0.5);
+    ctx.strokeStyle = '#5f6367';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 4; i++) {
+        const x = Math.floor(rnd() * size), y = Math.floor(rnd() * size);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 3 + Math.floor(rnd() * 5), y + 2 + Math.floor(rnd() * 3));
+        ctx.stroke();
+    }
+}, 404);
+
+TEX.logSide = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#9b6a3b', '#a77745', '#895b30', '#b08351', '#7b5028'], rnd, 0.35);
+    for (let x = 0; x < size; x += 5) {
+        ctx.fillStyle = 'rgba(60,36,16,.42)';
+        ctx.fillRect(x + Math.floor(rnd() * 2), 0, 1, size);
+    }
+    for (let i = 0; i < 10; i++) {
+        ctx.fillStyle = 'rgba(60,36,16,.3)';
+        ctx.fillRect(Math.floor(rnd() * size), Math.floor(rnd() * size), 1, 3 + Math.floor(rnd() * 5));
+    }
+}, 505);
+
+TEX.logTop = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#b98652', '#c39361', '#a87645', '#cfa06e'], rnd, 0.3);
+    ctx.strokeStyle = '#855a2f';
+    ctx.lineWidth = 1.5;
+    for (let r = 4; r < 16; r += 4) {
+        ctx.beginPath();
+        ctx.arc(16, 16, r, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    ctx.fillStyle = '#6f4824';
+    ctx.fillRect(15, 15, 3, 3);
+}, 606);
+
+TEX.leaves = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#357a2c', '#3f8b35', '#2c6625', '#4a9a3c', '#245a1e'], rnd, 0.62);
+    for (let i = 0; i < 16; i++) {
+        ctx.fillStyle = 'rgba(15,54,14,.35)';
+        ctx.fillRect(Math.floor(rnd() * size), Math.floor(rnd() * size), 1, 1);
+    }
+}, 707);
+
+TEX.brick = makeTex(32, (ctx, size, rnd) => {
+    ctx.fillStyle = '#a94a34';
+    ctx.fillRect(0, 0, size, size);
+    for (let row = 0; row < 4; row++) {
+        const y = row * 8;
+        for (let col = 0; col < 3; col++) {
+            const offset = row % 2 ? 8 : 0;
+            const x = col * 16 + offset - 8;
+            ctx.fillStyle = ['#b6533b', '#a34732', '#bb5b41'][Math.floor(rnd() * 3)];
+            ctx.fillRect(x + 1, y + 1, 14, 6);
+            for (let i = 0; i < 5; i++) {
+                ctx.fillStyle = 'rgba(90,30,20,.18)';
+                ctx.fillRect(x + 1 + Math.floor(rnd() * 13), y + 1 + Math.floor(rnd() * 5), 1, 1);
+            }
+        }
+    }
+    ctx.fillStyle = '#d9c7b2';
+    for (let y = 0; y < size; y += 8) ctx.fillRect(0, y, size, 1.5);
+    for (let row = 0; row < 4; row++) {
+        const offset = row % 2 ? 0 : 8;
+        for (let x = offset; x < size; x += 16) ctx.fillRect(x, row * 8, 1.5, 8);
+    }
+}, 808);
+
+TEX.gold = makeTex(32, (ctx, size, rnd) => {
+    noiseFill(ctx, size, ['#e8bd3f', '#f2cb57', '#d8a92c', '#f9dc7c', '#c69a22'], rnd, 0.4);
+    const spots = [[6, 7], [20, 5], [12, 21], [25, 24], [7, 26]];
+    for (const [x, y] of spots) {
+        ctx.fillStyle = '#fff3a8';
+        ctx.fillRect(x, y, 3, 3);
+        ctx.fillStyle = 'rgba(255,255,255,.85)';
+        ctx.fillRect(x, y, 1, 1);
+    }
+    ctx.strokeStyle = 'rgba(150,105,10,.45)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0.5, 0.5, size - 1, size - 1);
+}, 909);
+
+TEX.glass = makeTex(32, (ctx, size, rnd) => {
+    ctx.clearRect(0, 0, size, size);
+    ctx.fillStyle = 'rgba(190,234,245,.24)';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = 'rgba(240,253,255,.9)';
+    ctx.fillRect(0, 0, size, 2);
+    ctx.fillRect(0, size - 2, size, 2);
+    ctx.fillRect(0, 0, 2, size);
+    ctx.fillRect(size - 2, 0, 2, size);
+    ctx.fillStyle = 'rgba(255,255,255,.38)';
+    ctx.beginPath();
+    ctx.moveTo(6, size - 4);
+    ctx.lineTo(size - 4, 6);
+    ctx.lineTo(size - 8, 6);
+    ctx.lineTo(6, size - 8);
+    ctx.closePath();
+    ctx.fill();
+    for (let i = 0; i < 10; i++) {
+        ctx.fillStyle = 'rgba(255,255,255,.12)';
+        ctx.fillRect(Math.floor(rnd() * size), Math.floor(rnd() * size), 1, 1);
+    }
+}, 1010);
+
+/* ---------------- Blok materyalleri ---------------- */
+const mat = (map, extra) => new THREE.MeshLambertMaterial(Object.assign({ map }, extra || {}));
+
+const grassSideMat = mat(TEX.grassSide);
+const grassTopMat = mat(TEX.grassTop);
+const dirtMat = mat(TEX.dirt);
+const stoneMat = mat(TEX.stone);
+const logSideMat = mat(TEX.logSide);
+const logTopMat = mat(TEX.logTop);
+const leavesMat = mat(TEX.leaves);
+const brickMat = mat(TEX.brick);
+const goldMat = mat(TEX.gold);
+const glassMat = mat(TEX.glass, { transparent: true, opacity: 0.62, depthWrite: false });
+
+/* BoxGeometry yüz sırası: +X, -X, +Y, -Y, +Z, -Z */
+const BLOCK_MATERIALS = {
+    1: [grassSideMat, grassSideMat, grassTopMat, dirtMat, grassSideMat, grassSideMat],
+    2: dirtMat,
+    3: stoneMat,
+    4: [logSideMat, logSideMat, logTopMat, logTopMat, logSideMat, logSideMat],
+    5: leavesMat,
+    6: brickMat,
+    7: goldMat,
+    8: glassMat
+};
+const PARTICLE_COLORS = {
+    1: 0x63b447, 2: 0x7b5233, 3: 0x8c9094, 4: 0x9b6a3b,
+    5: 0x3f8b35, 6: 0xa94a34, 7: 0xe8bd3f, 8: 0xbfe9f5
+};
+const PARTICLE_MATS = {};
+for (const k in PARTICLE_COLORS) {
+    PARTICLE_MATS[k] = new THREE.MeshLambertMaterial({ color: PARTICLE_COLORS[k] });
+}
+
+/* ---------------- Dünya ---------------- */
+const blockGeo = new THREE.BoxGeometry(1, 1, 1);
+const blocks = [];
+const blockMap = new Map();
+const growQueue = [];
+const keyOf = (x, y, z) => x + ',' + y + ',' + z;
+
+function addBlock(x, y, z, type, pop) {
+    const key = keyOf(x, y, z);
+    if (blockMap.has(key)) return null;
+    const mesh = new THREE.Mesh(blockGeo, BLOCK_MATERIALS[type]);
+    mesh.position.set(x + 0.5, y + 0.5, z + 0.5);
+    mesh.userData = { x, y, z, type };
+    mesh.castShadow = !isCoarse;
+    mesh.receiveShadow = !isCoarse;
+    mesh.updateMatrixWorld(true);
+    scene.add(mesh);
+    blocks.push(mesh);
+    blockMap.set(key, mesh);
+    if (pop) {
+        mesh.scale.setScalar(0.5);
+        growQueue.push(mesh);
+    }
+    return mesh;
+}
+
+function removeBlockAt(x, y, z) {
+    const key = keyOf(x, y, z);
+    const mesh = blockMap.get(key);
+    if (!mesh) return false;
+    scene.remove(mesh);
+    blockMap.delete(key);
+    const i = blocks.indexOf(mesh);
+    if (i >= 0) blocks.splice(i, 1);
+    return true;
+}
+
+function heightAt() {
+    return 3;
+}
+
+function pathX(z) {
+    return 8 + Math.round(Math.sin((z - 13) * 0.55) * 1.6);
+}
+
+function isPath(x, z) {
+    return z >= 3 && z <= 13 && Math.abs(x - pathX(z)) <= 0;
+}
+
+function growTree(x, z) {
+    const base = heightAt(x, z);
+    const trunk = 4 + ((x + z) % 2);
+    for (let i = 1; i <= trunk; i++) addBlock(x, base + i, z, 4);
+    const top = base + trunk;
+    for (let dy = -1; dy <= 2; dy++) {
+        const r = dy < 0 ? 2 : 1;
+        for (let dx = -r; dx <= r; dx++) {
+            for (let dz = -r; dz <= r; dz++) {
+                if (dx === 0 && dz === 0 && dy <= 0) continue;
+                if (r === 2 && Math.abs(dx) === 2 && Math.abs(dz) === 2) continue;
+                if (dy === 2 && Math.abs(dx) + Math.abs(dz) > 1) continue;
+                addBlock(x + dx, top + dy, z + dz, 5);
+            }
+        }
+    }
+}
+
+function generateWorld() {
+    for (let x = 0; x < WORLD; x++) {
+        for (let z = 0; z < WORLD; z++) {
+            const h = heightAt(x, z);
+            for (let y = 0; y <= h; y++) {
+                let type = y === h ? (isPath(x, z) ? 2 : 1) : (y === h - 1 ? 2 : 3);
+                addBlock(x, y, z, type);
+            }
+        }
+    }
+    const treeSpots = [[5, 3], [12, 3], [13, 14], [2, 14]];
+    for (const [x, z] of treeSpots) growTree(x, z);
+}
+
+function clearWorld() {
+    for (const mesh of blocks) scene.remove(mesh);
+    blocks.length = 0;
+    blockMap.clear();
+    growQueue.length = 0;
+}
+
+generateWorld();
+
+/* ---------------- Oyuncu ---------------- */
+const player = {
+    pos: new THREE.Vector3(),
+    vel: new THREE.Vector3(),
+    grounded: false
+};
+let yaw = 0;
+let pitch = -0.16;
+let jumpBuffer = 0;
+let coyote = 0;
+
+const spawnPoint = new THREE.Vector3(
+    SPAWN_X,
+    heightAt(SPAWN_X, SPAWN_Z) + 1.03,
+    SPAWN_Z
+);
+
+function respawn(showToast) {
+    player.pos.copy(spawnPoint);
+    player.vel.set(0, 0, 0);
+    player.grounded = false;
+    yaw = 0;
+    pitch = -0.16;
+    if (showToast) toast('Yeniden doğdun 🌱');
+}
+
+respawn(false);
+
+function solidAt(x, y, z) {
+    return blockMap.has(keyOf(x, y, z));
+}
+
+function playerCollides(px, py, pz) {
+    const minX = Math.floor(px - PLAYER_R + 1e-5);
+    const maxX = Math.floor(px + PLAYER_R - 1e-5);
+    const minY = Math.floor(py + 1e-6);
+    const maxY = Math.floor(py + PLAYER_H - 1e-6);
+    const minZ = Math.floor(pz - PLAYER_R + 1e-5);
+    const maxZ = Math.floor(pz + PLAYER_R - 1e-5);
+    for (let x = minX; x <= maxX; x++) {
+        for (let y = minY; y <= maxY; y++) {
+            for (let z = minZ; z <= maxZ; z++) {
+                if (solidAt(x, y, z)) return true;
+            }
+        }
+    }
+    return false;
+}
+
+function blockHitsPlayer(x, y, z) {
+    return (player.pos.x + PLAYER_R > x && player.pos.x - PLAYER_R < x + 1) &&
+           (player.pos.y + PLAYER_H > y && player.pos.y < y + 1) &&
+           (player.pos.z + PLAYER_R > z && player.pos.z - PLAYER_R < z + 1);
+}
+
+const keys = new Set();
+const touchInput = { x: 0, y: 0 };
+
+function moveInput() {
+    let f = (keys.has('KeyW') ? 1 : 0) - (keys.has('KeyS') ? 1 : 0) + touchInput.y;
+    let s = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0) + touchInput.x;
+    const len = Math.hypot(f, s);
+    if (len > 1) { f /= len; s /= len; }
+    return { f, s };
+}
+
+function physicsStep(dt, input) {
+    const grounded = player.grounded;
+    coyote = grounded ? 0.1 : Math.max(0, coyote - dt);
+    const targetX = (-Math.sin(yaw) * input.f + Math.cos(yaw) * input.s) * WALK_SPEED;
+    const targetZ = (-Math.cos(yaw) * input.f - Math.sin(yaw) * input.s) * WALK_SPEED;
+    const k = 1 - Math.exp(-(grounded ? 16 : 5) * dt);
+    player.vel.x += (targetX - player.vel.x) * k;
+    player.vel.z += (targetZ - player.vel.z) * k;
+
+    if (jumpBuffer > 0 && coyote > 0) {
+        player.vel.y = JUMP_SPEED;
+        player.grounded = false;
+        jumpBuffer = 0;
+        coyote = 0;
+        sfx('jump');
+    }
+    player.vel.y -= GRAVITY * dt;
+    if (player.vel.y < -34) player.vel.y = -34;
+
+    const nx = player.pos.x + player.vel.x * dt;
+    if (!playerCollides(nx, player.pos.y, player.pos.z)) player.pos.x = nx;
+    else player.vel.x = 0;
+
+    const nz = player.pos.z + player.vel.z * dt;
+    if (!playerCollides(player.pos.x, player.pos.y, nz)) player.pos.z = nz;
+    else player.vel.z = 0;
+
+    const ny = player.pos.y + player.vel.y * dt;
+    if (!playerCollides(player.pos.x, ny, player.pos.z)) {
+        player.pos.y = ny;
+        if (player.vel.y < 0) player.grounded = false;
+    } else {
+        if (player.vel.y < 0) {
+            player.grounded = true;
+            player.pos.y = Math.floor(player.pos.y + 0.0001);
+        }
+        player.vel.y = 0;
+    }
+
+    player.grounded = player.vel.y <= 0.001 &&
+        playerCollides(player.pos.x, player.pos.y - 0.04, player.pos.z);
+
+    if (player.pos.y < -0.5) respawn(true);
+}
+
+function updatePlayer(dt) {
+    const input = moveInput();
+    if (jumpBuffer > 0) jumpBuffer = Math.max(0, jumpBuffer - dt);
+    let remaining = Math.min(dt, 0.1);
+    while (remaining > 1e-4) {
+        const step = Math.min(remaining, 0.01);
+        physicsStep(step, input);
+        remaining -= step;
+    }
+}
+
+/* ---------------- Hedefleme / vurgulama ---------------- */
+const raycaster = new THREE.Raycaster();
+raycaster.far = REACH;
+const centerPoint = new THREE.Vector2(0, 0);
+const highlight = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(1.008, 1.008, 1.008)),
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 })
+);
+highlight.visible = false;
+highlight.renderOrder = 3;
+scene.add(highlight);
+
+let currentTarget = null;
+
+function updateTarget() {
+    if (!playing) {
+        currentTarget = null;
+        highlight.visible = false;
+        return;
+    }
+    camera.updateMatrixWorld();
+    raycaster.setFromCamera(centerPoint, camera);
+    const hits = raycaster.intersectObjects(blocks, false);
+    currentTarget = hits.length ? hits[0] : null;
+    if (currentTarget) {
+        highlight.visible = true;
+        highlight.position.copy(currentTarget.object.position);
+    } else {
+        highlight.visible = false;
+    }
+}
+
+/* ---------------- Parçacıklar ---------------- */
+const particleGeo = new THREE.BoxGeometry(0.15, 0.15, 0.15);
+const particles = [];
+
+function burst(x, y, z, type) {
+    const material = PARTICLE_MATS[type] || PARTICLE_MATS[3];
+    for (let i = 0; i < 9; i++) {
+        const p = new THREE.Mesh(particleGeo, material);
+        p.position.set(
+            x + (Math.random() - 0.5) * 0.55,
+            y + (Math.random() - 0.5) * 0.55,
+            z + (Math.random() - 0.5) * 0.55
+        );
+        p.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+        p.userData.vel = new THREE.Vector3(
+            (Math.random() - 0.5) * 3.4,
+            1.4 + Math.random() * 2.8,
+            (Math.random() - 0.5) * 3.4
+        );
+        p.userData.spin = new THREE.Vector3(
+            (Math.random() - 0.5) * 8,
+            (Math.random() - 0.5) * 8,
+            (Math.random() - 0.5) * 8
+        );
+        p.userData.life = 0.42 + Math.random() * 0.38;
+        p.userData.maxLife = p.userData.life;
+        scene.add(p);
+        particles.push(p);
+    }
+}
+
+function updateParticles(dt) {
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        const u = p.userData;
+        u.life -= dt;
+        if (u.life <= 0) {
+            scene.remove(p);
+            particles.splice(i, 1);
+            continue;
+        }
+        u.vel.y -= 20 * dt;
+        p.position.addScaledVector(u.vel, dt);
+        p.rotation.x += u.spin.x * dt;
+        p.rotation.y += u.spin.y * dt;
+        p.rotation.z += u.spin.z * dt;
+        const s = clamp(u.life / u.maxLife, 0, 1);
+        p.scale.setScalar(0.35 + s * 0.75);
+    }
+}
+
+/* ---------------- Arayüz durumu ---------------- */
+const overlay = document.getElementById('overlay');
+const startBtn = document.getElementById('startBtn');
+const resetBtn = document.getElementById('resetBtn');
+const eyebrow = overlay.querySelector('.eyebrow');
+const toastEl = document.getElementById('toast');
+const slotEls = Array.from(document.querySelectorAll('.slot'));
+const btnBreak = document.getElementById('btnBreak');
+const btnPlace = document.getElementById('btnPlace');
+const btnJump = document.getElementById('btnJump');
+const joystick = document.getElementById('joystick');
+const knob = document.getElementById('knob');
+const menuBtn = document.getElementById('menuBtn');
+const soundBtn = document.getElementById('soundBtn');
+
+let playing = false;
+let locked = false;
+let started = false;
+let selectedType = 1;
+let toastTimer = 0;
+
+function toast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1600);
+}
+
+/* ---------------- Ses ---------------- */
+let audioCtx = null;
+let muted = false;
+
+function initAudio() {
+    if (!audioCtx) {
+        try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) audioCtx = new AC();
+        } catch (error) {
+            audioCtx = null;
+        }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+    }
+}
+
+function tone(f0, f1, dur, type, vol) {
+    if (!audioCtx || muted || audioCtx.state !== 'running') return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(f0, t);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(25, f1), t + dur);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.03);
+}
+
+function sfx(kind) {
+    switch (kind) {
+        case 'break': tone(190, 70, 0.13, 'square', 0.032); break;
+        case 'place': tone(135, 225, 0.085, 'sine', 0.05); break;
+        case 'jump': tone(300, 440, 0.11, 'sine', 0.024); break;
+        case 'select': tone(520, 640, 0.05, 'sine', 0.018); break;
+        case 'deny': tone(120, 80, 0.1, 'sawtooth', 0.022); break;
+    }
+}
+
+function toggleMute() {
+    muted = !muted;
+    if (!muted) { initAudio(); sfx('select'); }
+    updateSoundIcon();
+    toast(muted ? 'Ses kapatıldı' : 'Ses açıldı');
+}
+
+function updateSoundIcon() {
+    soundBtn.textContent = muted ? '🔇' : '🔊';
+    soundBtn.setAttribute('aria-label', muted ? 'Sesi aç' : 'Sesi kapat');
+}
+updateSoundIcon();
+
+/* ---------------- Blok seçimi ---------------- */
+function selectSlot(index) {
+    if (index < 0 || index > 7) return;
+    selectedType = index + 1;
+    slotEls.forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+        el.setAttribute('aria-pressed', i === index ? 'true' : 'false');
+    });
+    sfx('select');
+}
+
+slotEls.forEach((el, i) => {
+    el.addEventListener('click', (event) => {
+        event.preventDefault();
+        selectSlot(i);
+    });
+});
+
+/* ---------------- Oyun akışı ---------------- */
+function beginPlay() {
+    started = true;
+    overlay.classList.add('hidden');
+    overlay.classList.remove('paused');
+    eyebrow.textContent = '3D Voxel Sandbox';
+    initAudio();
+
+    if (isCoarse) {
+        playing = true;
+        document.body.classList.add('playing');
+        return;
+    }
+
+    if (!locked && renderer.domElement.requestPointerLock) {
+        try {
+            const result = renderer.domElement.requestPointerLock();
+            if (result && result.catch) result.catch(() => {});
+        } catch (error) { /* tarayıcı kilidi reddetti */ }
+    }
+}
+
+function showPause() {
+    overlay.classList.remove('hidden');
+    overlay.classList.add('paused');
+    eyebrow.textContent = 'Oyun duraklatıldı';
+    startBtn.textContent = 'Devam Et';
+}
+
+function resetWorld() {
+    clearWorld();
+    particles.forEach((p) => scene.remove(p));
+    particles.length = 0;
+    generateWorld();
+    respawn(false);
+    scene.updateMatrixWorld(true);
+    toast('Dünya yenilendi 🌍');
+    sfx('place');
+}
+
+startBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    beginPlay();
+});
+overlay.addEventListener('click', (event) => {
+    if (event.target.closest('button')) return;
+    beginPlay();
+});
+resetBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    resetWorld();
+    beginPlay();
+});
+
+/* ---------------- Fare kilidi ---------------- */
+document.addEventListener('pointerlockchange', () => {
+    const nowLocked = document.pointerLockElement === renderer.domElement;
+    if (nowLocked) {
+        locked = true;
+        playing = true;
+        started = true;
+        overlay.classList.add('hidden');
+        document.body.classList.add('playing');
+    } else {
+        const wasLocked = locked;
+        locked = false;
+        if (wasLocked && !isCoarse) {
+            playing = false;
+            keys.clear();
+            jumpBuffer = 0;
+            touchInput.x = 0;
+            touchInput.y = 0;
+            document.body.classList.remove('playing');
+            showPause();
+        }
+    }
+});
+
+document.addEventListener('pointerlockerror', () => {
+    toast('Fare kilidi açılamadı. Sahneye tıklayıp tekrar dene.');
+});
+
+document.addEventListener('mousemove', (event) => {
+    if (!locked || !playing) return;
+    yaw -= event.movementX * 0.0022;
+    pitch = clamp(pitch - event.movementY * 0.0022, -1.45, 1.45);
+});
+
+renderer.domElement.addEventListener('pointerdown', (event) => {
+    if (isCoarse) return;
+    if (!locked && started) beginPlay();
+});
+
+document.addEventListener('mousedown', (event) => {
+    if (isCoarse || !locked || !playing) return;
+    if (event.button === 0) breakTarget();
+    else if (event.button === 2) placeBlock();
+});
+
+document.addEventListener('contextmenu', (event) => event.preventDefault());
+
+/* ---------------- Klavye ---------------- */
+window.addEventListener('keydown', (event) => {
+    if (event.code === 'KeyM' && !event.repeat) {
+        toggleMute();
+        return;
+    }
+    if (!playing) return;
+
+    if (event.code === 'Space') {
+        event.preventDefault();
+        if (!event.repeat) jumpBuffer = 0.2;
+        return;
+    }
+    if (event.code === 'KeyW' || event.code === 'KeyA' ||
+        event.code === 'KeyS' || event.code === 'KeyD') {
+        keys.add(event.code);
+        return;
+    }
+    if (event.code.indexOf('Digit') === 0) {
+        const n = Number(event.code.slice(5));
+        if (n >= 1 && n <= 8) selectSlot(n - 1);
+        return;
+    }
+    if (event.code === 'KeyR' && !event.repeat) {
+        resetWorld();
+    }
+});
+
+window.addEventListener('keyup', (event) => {
+    keys.delete(event.code);
+});
+
+window.addEventListener('blur', () => {
+    keys.clear();
+    jumpBuffer = 0;
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        keys.clear();
+        jumpBuffer = 0;
+    }
+});
+
+/* ---------------- Dokunmatik kontroller ---------------- */
+let lookPointer = null;
+let lookX = 0;
+let lookY = 0;
+
+renderer.domElement.addEventListener('pointerdown', (event) => {
+    if (!isCoarse || !playing) return;
+    if (lookPointer !== null) return;
+    lookPointer = event.pointerId;
+    lookX = event.clientX;
+    lookY = event.clientY;
+    try { renderer.domElement.setPointerCapture(event.pointerId); } catch (error) {}
+});
+
+renderer.domElement.addEventListener('pointermove', (event) => {
+    if (!isCoarse || !playing || event.pointerId !== lookPointer) return;
+    const dx = event.clientX - lookX;
+    const dy = event.clientY - lookY;
+    lookX = event.clientX;
+    lookY = event.clientY;
+    yaw -= dx * 0.0052;
+    pitch = clamp(pitch - dy * 0.0052, -1.45, 1.45);
+});
+
+function endLook(event) {
+    if (event.pointerId === lookPointer) lookPointer = null;
+}
+renderer.domElement.addEventListener('pointerup', endLook);
+renderer.domElement.addEventListener('pointercancel', endLook);
+
+let joyPointer = null;
+
+function joyMove(event) {
+    const rect = joystick.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const max = rect.width * 0.34;
+    let dx = event.clientX - cx;
+    let dy = event.clientY - cy;
+    const len = Math.hypot(dx, dy);
+    if (len > max) {
+        dx = dx / len * max;
+        dy = dy / len * max;
+    }
+    knob.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+    touchInput.x = dx / max;
+    touchInput.y = -dy / max;
+}
+
+joystick.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (joyPointer !== null) return;
+    joyPointer = event.pointerId;
+    try { joystick.setPointerCapture(event.pointerId); } catch (error) {}
+    joyMove(event);
+});
+joystick.addEventListener('pointermove', (event) => {
+    if (event.pointerId !== joyPointer) return;
+    event.preventDefault();
+    joyMove(event);
+});
+
+function endJoy(event) {
+    if (event.pointerId !== joyPointer) return;
+    joyPointer = null;
+    touchInput.x = 0;
+    touchInput.y = 0;
+    knob.style.transform = 'translate(0, 0)';
+}
+joystick.addEventListener('pointerup', endJoy);
+joystick.addEventListener('pointercancel', endJoy);
+joystick.addEventListener('lostpointercapture', endJoy);
+
+function bindTouchButton(el, action) {
+    el.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        el.classList.add('pressed');
+        action();
+    });
+    const release = () => el.classList.remove('pressed');
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+    el.addEventListener('pointerleave', release);
+}
+bindTouchButton(btnJump, () => { jumpBuffer = 0.2; });
+bindTouchButton(btnBreak, breakTarget);
+bindTouchButton(btnPlace, placeBlock);
+
+function openMobileMenu() {
+    keys.clear();
+    jumpBuffer = 0;
+    touchInput.x = 0;
+    touchInput.y = 0;
+    joyPointer = null;
+    knob.style.transform = 'translate(0, 0)';
+    playing = false;
+    document.body.classList.remove('playing');
+    showPause();
+}
+
+menuBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openMobileMenu();
+});
+soundBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleMute();
+});
+
+/* ---------------- Blok kırma / koyma ---------------- */
+function breakTarget() {
+    const hit = currentTarget;
+    if (!hit) return;
+    const u = hit.object.userData;
+    if (u.y <= 0) {
+        toast('Ana kaya kırılamaz 🪨');
+        sfx('deny');
+        return;
+    }
+    removeBlockAt(u.x, u.y, u.z);
+    burst(u.x + 0.5, u.y + 0.5, u.z + 0.5, u.type);
+    currentTarget = null;
+    highlight.visible = false;
+    sfx('break');
+}
+
+function placeBlock() {
+    const hit = currentTarget;
+    if (!hit || !hit.face) return;
+    const u = hit.object.userData;
+    const n = hit.face.normal;
+    const x = u.x + Math.round(n.x);
+    const y = u.y + Math.round(n.y);
+    const z = u.z + Math.round(n.z);
+
+    if (blockMap.has(keyOf(x, y, z))) return;
+    if (y < 0 || y > 48) {
+        toast('Daha yükseğe koyamazsın');
+        return;
+    }
+    if (blockHitsPlayer(x, y, z)) {
+        toast('Buraya sığmıyor 🙃');
+        sfx('deny');
+        return;
+    }
+    addBlock(x, y, z, selectedType, true);
+    sfx('place');
+}
+
+/* ---------------- Pencere ---------------- */
+function onResize() {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(innerWidth, innerHeight);
+}
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', () => setTimeout(onResize, 150));
+
+/* ---------------- Ana döngü ---------------- */
+let lastTime = performance.now();
+let elapsed = 0;
+let bobPhase = 0;
+
+function updateGrow(dt) {
+    for (let i = growQueue.length - 1; i >= 0; i--) {
+        const mesh = growQueue[i];
+        const s = Math.min(1, mesh.scale.x + dt * 5.5);
+        mesh.scale.setScalar(s);
+        if (s >= 1) growQueue.splice(i, 1);
+    }
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    const now = performance.now();
+    let dt = (now - lastTime) / 1000;
+    lastTime = now;
+    if (dt > 0.1) dt = 0.1;
+    elapsed += dt;
+
+    if (playing) updatePlayer(dt);
+
+    const speed = Math.hypot(player.vel.x, player.vel.z);
+    if (playing && player.grounded && speed > 0.35) {
+        bobPhase += dt * (6 + speed * 1.15);
+    }
+    const bob = (playing && player.grounded)
+        ? Math.sin(bobPhase) * Math.min(speed * 0.006, 0.032)
+        : 0;
+
+    camera.position.set(player.pos.x, player.pos.y + EYE + bob, player.pos.z);
+    camera.rotation.x = pitch;
+    camera.rotation.y = yaw;
+    camera.rotation.z = 0;
+
+    updateTarget();
+    updateParticles(dt);
+    updateGrow(dt);
+
+    for (const cloud of clouds) {
+        cloud.group.position.x += cloud.speed * dt;
+        if (cloud.group.position.x > 78) cloud.group.position.x = -78;
+    }
+    water.position.y = 2.15 + Math.sin(elapsed * 0.7) * 0.012;
+    water.material.opacity = 0.8 + Math.sin(elapsed * 0.9) * 0.025;
+
+    renderer.render(scene, camera);
+}
+
+respawn(false);
+animate();
+    </script>
+</body>
+</html>

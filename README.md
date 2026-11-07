@@ -16,3 +16,22 @@
 - 👤 [Explore the creator's projects](https://go.ondev.store/ibrahim2013kose-sketch).
 - 🌍 [Create with OMGithub](https://go.ondev.store/).
 <!-- omgithub:readme:end -->
+
+## 🧱 Voxel Sandbox
+
+A single-file, Turkish-language 3D voxel sandbox built with Three.js. Open `index.html` through any static file server (for example `npx serve .` or `python3 -m http.server`) and click **Oyna**.
+
+### Controls
+
+| Action | Desktop | Mobile |
+| --- | --- | --- |
+| Move | `W` `A` `S` `D` / arrow keys | Left joystick |
+| Look | Mouse (pointer lock) | Drag on the world |
+| Jump | `Space` | **ZIPLA** |
+| Break block | Left click | **KIR** |
+| Place block | Right click | **KOY** |
+| Select block | `1`–`8` / mouse wheel | Tap the hotbar |
+| Pause | `Esc` | **☰** |
+| Sound | — | **🔊 / 🔇** |
+
+Three.js r128 is vendored in `vendor/three.min.js`, so the game runs fully offline.
